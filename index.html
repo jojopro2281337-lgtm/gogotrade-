@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Свайп-тренер">
+<meta name="theme-color" content="#10161e">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+</head>
+<body>
+<title>Свайп-тренер</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: тёмная рабочая панель, вкладки «Тренировка» и «Калибровка», сцена с камерой на весь экран по кнопке */
+:root {
+  color-scheme: dark;
+  --bg: #11161b;
+  --surface: #1a2128;
+  --surface2: #232c35;
+  --line: #2f3a45;
+  --fg: #e8eef3;
+  --muted: #96a4b0;
+  --accent: #6cb6ff;
+  --accent-ink: #06121d;
+  --good: #4cc38a;
+  --warn: #f2b441;
+  --bad: #ff7077;
+  --cv-sky: #151d26;
+  --cv-ground: #0f151b;
+  --cv-grid: #3b4a58;
+  --cv-label: #6f7f8d;
+  --cv-target: #ff5a64;
+  --cv-target-ring: #ffd2d5;
+  --cv-cross: #f4f8fb;
+  --cv-cross-edge: #05090d;
+  --font-text: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-num: 'IBM Plex Sans Condensed', 'Arial Narrow', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #eef2f6;
+    --surface: #ffffff;
+    --surface2: #e4eaf0;
+    --line: #cbd5de;
+    --fg: #15202a;
+    --muted: #566573;
+    --accent: #1f6fd1;
+    --accent-ink: #ffffff;
+    --good: #17855a;
+    --warn: #a86a00;
+    --bad: #c92f3a;
+    --cv-sky: #e3ebf3;
+    --cv-ground: #cfdae5;
+    --cv-grid: #93a6b8;
+    --cv-label: #5c6f80;
+    --cv-target: #e0343f;
+    --cv-target-ring: #ffffff;
+    --cv-cross: #0b1620;
+    --cv-cross-edge: #ffffff;
+  }
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #eef2f6;
+  --surface: #ffffff;
+  --surface2: #e4eaf0;
+  --line: #cbd5de;
+  --fg: #15202a;
+  --muted: #566573;
+  --accent: #1f6fd1;
+  --accent-ink: #ffffff;
+  --good: #17855a;
+  --warn: #a86a00;
+  --bad: #c92f3a;
+  --cv-sky: #e3ebf3;
+  --cv-ground: #cfdae5;
+  --cv-grid: #93a6b8;
+  --cv-label: #5c6f80;
+  --cv-target: #e0343f;
+  --cv-target-ring: #ffffff;
+  --cv-cross: #0b1620;
+  --cv-cross-edge: #ffffff;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #11161b;
+  --surface: #1a2128;
+  --surface2: #232c35;
+  --line: #2f3a45;
+  --fg: #e8eef3;
+  --muted: #96a4b0;
+  --accent: #6cb6ff;
+  --accent-ink: #06121d;
+  --good: #4cc38a;
+  --warn: #f2b441;
+  --bad: #ff7077;
+  --cv-sky: #151d26;
+  --cv-ground: #0f151b;
+  --cv-grid: #3b4a58;
+  --cv-label: #6f7f8d;
+  --cv-target: #ff5a64;
+  --cv-target-ring: #ffd2d5;
+  --cv-cross: #f4f8fb;
+  --cv-cross-edge: #05090d;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-text);
+  font-size: 15px;
+  line-height: 1.45;
+  padding-block: 14px 28px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+h1 { font-family: var(--font-num); font-weight: 700; font-size: 26px; letter-spacing: .01em; margin: 0; line-height: 1.1; }
+h2 { font-family: var(--font-num); font-weight: 600; font-size: 18px; margin: 0 0 6px; letter-spacing: .01em; }
+p { margin: 0; }
+.sub { color: var(--muted); font-size: 13px; }
+.head { display: flex; flex-direction: column; gap: 4px; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); }
+.tab {
+  background: none; border: 0; padding: 10px 14px; margin-bottom: -1px;
+  color: var(--muted); font-family: var(--font-num); font-weight: 600; font-size: 17px;
+  border-bottom: 2px solid transparent;
+}
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px 14px; min-height: 40px; font-weight: 500;
+}
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.lbl { color: var(--muted); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; margin-right: 2px; }
+
+.stage { position: relative; height: clamp(300px, 58vh, 560px); border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: var(--cv-sky); }
+.stage-inner { position: relative; width: 100%; height: 100%; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.stage.full {
+  position: fixed; inset: 0; z-index: 100; height: auto; border-radius: 0; border: 0;
+  padding: 0; overscroll-behavior: none;
+}
+.stage.full .corner { top: max(8px, env(safe-area-inset-top, 0px)); right: max(8px, env(safe-area-inset-right, 0px)); }
+.stage.full .overlay { padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.editbar { position: absolute; top: max(8px, env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 4; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; max-width: calc(100% - 150px); }
+.editbar[hidden] { display: none; }
+.editbar input[type=range] { width: 110px; }
+#probe { position: fixed; left: 0; top: 0; width: 0; height: 0; visibility: hidden; pointer-events: none; padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+.corner { position: absolute; top: 8px; right: 8px; z-index: 3; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font-size: 13px; }
+.overlay {
+  position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+}
+.overlay[hidden] { display: none; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; width: min(100%, 420px); max-height: 100%; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+.primary { background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 8px; padding: 12px 18px; font-weight: 600; font-size: 16px; min-height: 46px; }
+.ghost { background: var(--surface2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; min-height: 42px; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.stat { background: var(--surface2); border-radius: 8px; padding: 8px 10px; }
+.stat b { display: block; font-family: var(--font-num); font-size: 24px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 12px; }
+.tip { font-size: 14px; border-left: 3px solid var(--accent); padding-left: 10px; }
+
+.block { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field label, .field .fl { font-size: 13px; color: var(--muted); }
+.field .in { display: flex; gap: 10px; align-items: center; }
+input[type="text"], select {
+  background: var(--surface2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; min-height: 40px; width: 100%; min-width: 0;
+}
+.in input[type="text"] { width: 92px; flex: none; font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
+.check { display: flex; align-items: center; gap: 10px; min-height: 40px; }
+.check input { width: 20px; height: 20px; accent-color: var(--accent); }
+.note { color: var(--muted); font-size: 13px; }
+.out { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.out .stat b { font-size: 22px; }
+.warn { color: var(--warn); }
+.bar { height: 36px; border: 2px solid var(--accent); border-radius: 6px; background: var(--surface2); max-width: 100%; }
+.hist { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.hist div { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 6px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.hist div:last-child { border-bottom: 0; }
+[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <div class="head">
+    <h1>Свайп-тренер</h1>
+    <p class="sub">Камера крутится свайпом, расстояние на оборот задаётся в сантиметрах. Подгоняется под замер из Valorant Mobile.</p>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-train" aria-selected="true" aria-controls="view-train">Тренировка</button>
+    <button class="tab" role="tab" id="tab-calib" aria-selected="false" aria-controls="view-calib">Калибровка</button>
+  </div>
+
+  <!-- ТРЕНИРОВКА -->
+  <section id="view-train" role="tabpanel" aria-labelledby="tab-train" style="display:flex;flex-direction:column;gap:12px">
+    <div class="row" id="modeRow" role="group" aria-label="Режим">
+      <span class="lbl">Режим</span>
+      <button class="chip" data-mode="micro" aria-pressed="true">Микро</button>
+      <button class="chip" data-mode="flick" aria-pressed="false">Флик</button>
+      <button class="chip" data-mode="track" aria-pressed="false">Трекинг</button>
+    </div>
+    <div class="row" id="durRow" role="group" aria-label="Длительность">
+      <span class="lbl">Время</span>
+      <button class="chip" data-dur="30" aria-pressed="false">30 с</button>
+      <button class="chip" data-dur="60" aria-pressed="true">60 с</button>
+      <button class="chip" data-dur="120" aria-pressed="false">120 с</button>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="stage-inner" id="stageInner">
+        <canvas id="cv" aria-label="Тренировочная сцена: свайпай, чтобы вращать камеру"></canvas>
+        <div id="probe"></div>
+        <button class="corner" id="fsBtn" type="button">На весь экран</button>
+        <div class="editbar" id="fireEdit" hidden>
+          <span class="note" style="margin:0">Тапни или тащи кнопку куда удобно</span>
+          <label class="lbl" for="fireSize" style="margin:0">Размер</label>
+          <input type="range" id="fireSize" min="26" max="72" step="1" aria-label="Размер кнопки огня">
+          <button class="ghost" id="fireReset" type="button">Сброс</button>
+          <button class="primary" id="fireDone" type="button" style="min-height:42px;padding:8px 16px">Готово</button>
+        </div>
+        <div class="overlay" id="startOv">
+          <div class="panel">
+            <h2 id="ovTitle">Микро</h2>
+            <p id="ovDesc" class="note"></p>
+            <p class="note" id="ovCtl"></p>
+            <button class="primary" id="startBtn" type="button">Старт</button>
+          </div>
+        </div>
+        <div class="overlay" id="endOv" hidden>
+          <div class="panel">
+            <h2 id="endTitle">Результат</h2>
+            <div class="stats" id="endStats"></div>
+            <p class="tip" id="endTip"></p>
+            <div class="row">
+              <button class="primary" id="againBtn" type="button">Ещё раз</button>
+              <button class="ghost" id="closeBtn" type="button">Закрыть</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>Настройки камеры</h2>
+      <p class="note warn" id="unmeasured">Расстояние на оборот пока не замерено: стоит 20 см по умолчанию. Сделай замер на вкладке «Калибровка».</p>
+      <div class="grid2">
+        <div class="field">
+          <label for="cmNum">Расстояние на оборот 360°, см</label>
+          <div class="in"><input type="text" inputmode="decimal" id="cmNum"><input type="range" id="cmRange" min="8" max="60" step="0.5" aria-label="Расстояние на оборот"></div>
+          <span class="note" id="degPerCm"></span>
+        </div>
+        <div class="field">
+          <label for="yNum">Вертикаль относительно горизонтали</label>
+          <div class="in"><input type="text" inputmode="decimal" id="yNum"><input type="range" id="yRange" min="0.5" max="1.5" step="0.01" aria-label="Вертикаль"></div>
+          <span class="note">У тебя в игре 45 к 50, то есть 0,90.</span>
+        </div>
+        <div class="field">
+          <span class="fl">Прицеливание (ADS)</span>
+          <label class="check"><input type="checkbox" id="adsOn"> Включить ADS-множитель</label>
+          <div class="in"><input type="text" inputmode="decimal" id="adsNum" aria-label="ADS-множитель"><input type="range" id="adsRange" min="0.3" max="1.5" step="0.01" aria-label="ADS-множитель"></div>
+        </div>
+        <div class="field">
+          <label for="fovNum">Поле зрения, °</label>
+          <div class="in"><input type="text" inputmode="decimal" id="fovNum"><input type="range" id="fovRange" min="60" max="120" step="1" aria-label="Поле зрения"></div>
+          <span class="note">В Valorant Mobile значение не знаю, 90 взято для примера.</span>
+        </div>
+        <div class="field">
+          <label for="sizeSel">Размер цели</label>
+          <select id="sizeSel">
+            <option value="s">Маленькая</option>
+            <option value="m">Средняя</option>
+            <option value="l">Большая</option>
+          </select>
+        </div>
+        <div class="field">
+          <span class="fl">Кнопка огня</span>
+          <button class="ghost" id="fireEditBtn" type="button">Расставить кнопку</button>
+          <span class="note">Откроется на весь экран: тапни или перетащи кнопку туда, где удобно пальцу.</span>
+        </div>
+        <div class="field">
+          <span class="fl">Управление</span>
+          <label class="check"><input type="checkbox" id="invY"> Инвертировать вертикаль</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>Последние сессии</h2>
+      <div class="hist" id="hist"></div>
+      <div class="row"><button class="ghost" id="clearHist" type="button">Очистить список</button></div>
+    </div>
+  </section>
+
+  <!-- КАЛИБРОВКА -->
+  <section id="view-calib" role="tabpanel" aria-labelledby="tab-calib" hidden style="display:flex;flex-direction:column;gap:12px">
+    <div class="block">
+      <h2>1. Экран</h2>
+      <p class="note">Страница считает сантиметры по размеру экрана. Для iPhone 14 Pro Max значение уже стоит. Если расстояния кажутся неверными (приложение могло масштабировать страницу), поправь по банковской карте: короткая сторона карты 5,4 см.</p>
+      <div class="bar" id="cardBar"></div>
+      <div class="field">
+        <label for="cardRange">Растяни полосу до ширины карты</label>
+        <input type="range" id="cardRange" min="140" max="420" step="1">
+      </div>
+      <div class="row">
+        <button class="ghost" id="cardApply" type="button">Применить по карте</button>
+        <button class="ghost" id="cardReset" type="button">Вернуть для iPhone 14 Pro Max</button>
+      </div>
+      <p class="note" id="pxInfo"></p>
+    </div>
+
+    <div class="block">
+      <h2>2. Замер в Valorant Mobile</h2>
+      <p class="note">В тире Valorant выбери метку на стене. Делай одинаковые свайпы горизонтально и считай, сколько их нужно на оборот 360°. Дробные числа можно, например 3,5. Повтори 3 раза и возьми среднее.</p>
+      <div class="grid2">
+        <div class="field">
+          <label for="lenSel">Длина одного свайпа</label>
+          <select id="lenSel">
+            <option value="ruler">5 см по линейке</option>
+            <option value="half">Половина длинной стороны экрана</option>
+            <option value="full">Вся длинная сторона экрана, от края до края</option>
+            <option value="own">Своя длина</option>
+          </select>
+          <div class="in" id="ownLenRow" hidden><input type="text" inputmode="decimal" id="ownLen" aria-label="Своя длина, см"><span class="note">см</span></div>
+          <span class="note" id="lenInfo"></span>
+        </div>
+        <div class="field">
+          <label for="nHip">Свайпов на оборот, без ADS</label>
+          <div class="in"><input type="text" inputmode="decimal" id="nHip"></div>
+        </div>
+        <div class="field">
+          <label for="nAds">Свайпов на оборот, с ADS (Вандал)</label>
+          <div class="in"><input type="text" inputmode="decimal" id="nAds"></div>
+        </div>
+      </div>
+      <div class="out" id="measOut"></div>
+      <div class="row"><button class="primary" id="applyMeas" type="button">Использовать в тренажёре</button><span class="note" id="applyInfo"></span></div>
+    </div>
+
+    <div class="block">
+      <h2>3. Подгонка другого тренажёра</h2>
+      <p class="note">В чужом тренажёре нажми «Показать расстояние / 360», впиши число и текущую сенсу. Новая сенса считается из замера выше.</p>
+      <div class="grid2">
+        <div class="field">
+          <label for="trSens">Сенса в тренажёре сейчас</label>
+          <div class="in"><input type="text" inputmode="decimal" id="trSens"></div>
+        </div>
+        <div class="field">
+          <label for="trDist">Число на кнопке «расстояние / 360»</label>
+          <div class="in"><input type="text" inputmode="decimal" id="trDist">
+            <select id="trUnit" aria-label="Единицы" style="width:auto"><option value="cm">см</option><option value="in">дюймы</option></select></div>
+        </div>
+        <div class="field">
+          <label for="valX">Valorant: общая сенса</label>
+          <div class="in"><input type="text" inputmode="decimal" id="valX"></div>
+        </div>
+        <div class="field">
+          <label for="valY">Valorant: вертикаль</label>
+          <div class="in"><input type="text" inputmode="decimal" id="valY"></div>
+        </div>
+      </div>
+      <div class="out" id="trOut"></div>
+      <p class="note">Формула верна, если шкала сенсы линейная: больше сенса, меньше расстояние. После изменения нажми кнопку «расстояние / 360» ещё раз и сверь число с целью. Если не совпало, повтори подгонку с новым числом.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var KEY = 'swipe-trainer-v1', HKEY = 'swipe-trainer-hist-v1';
+  var IPHONE_PX = 60.4;
+  var DEF = { cm360: 20, yRatio: 0.9, ads: false, adsMult: 0.8, fov: 90, size: 'm', invertY: false,
+    pxPerCm: IPHONE_PX, measured: false, fire: { x: 0.86, y: 0.78, r: 40 }, mode: 'micro', dur: 60,
+    calc: { lenSel: 'ruler', ownLen: 5, nHip: '', nAds: '', trSens: 1, trDist: '', trUnit: 'cm', valX: 50, valY: 45 } };
+  var S = JSON.parse(JSON.stringify(DEF));
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) { var p = JSON.parse(raw); for (var k in p) { if (k === 'calc') { for (var c in p.calc) S.calc[c] = p.calc[c]; } else S[k] = p[k]; } }
+  } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  var hist = [];
+  try { hist = JSON.parse(localStorage.getItem(HKEY) || '[]') || []; } catch (e) { hist = []; }
+  function saveHist() { try { localStorage.setItem(HKEY, JSON.stringify(hist)); } catch (e) {} }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var num = function (v) { var n = parseFloat(String(v).replace(',', '.')); return isFinite(n) ? n : NaN; };
+  var fmt = function (n, d) { if (d === undefined) d = 1; return isFinite(n) ? n.toLocaleString('ru-RU', { minimumFractionDigits: d, maximumFractionDigits: d }) : '—'; };
+  var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+  var rand = function (a, b) { return a + Math.random() * (b - a); };
+  var wrap180 = function (a) { a = (a + 180) % 360; if (a < 0) a += 360; return a - 180; };
+  var D2R = Math.PI / 180;
+
+  /* ---------- вкладки ---------- */
+  function showTab(name) {
+    var t = name === 'train';
+    $('tab-train').setAttribute('aria-selected', t); $('tab-calib').setAttribute('aria-selected', !t);
+    $('view-train').hidden = !t; $('view-calib').hidden = t;
+    if (!t && run.state === 'running') endSession(true);
+    if (!t) { if (editFire) endEdit(); setFull(false); }
+    if (t) resize();
+  }
+  $('tab-train').onclick = function () { showTab('train'); };
+  $('tab-calib').onclick = function () { showTab('calib'); refreshCalib(); };
+
+  /* ---------- состояние сцены ---------- */
+  var MODES = {
+    micro: { name: 'Микро', desc: 'Цели появляются в 2–6° от прицела. Тренирует микродоводку: короткие поправки подушечкой пальца без отрыва.', ctl: 'Свайп по сцене вращает камеру. Кнопка «Огонь» справа внизу.' },
+    flick: { name: 'Флик', desc: 'Цели далеко от прицела, 30–80° в стороны. Быстрый свайп и точная остановка на цели.', ctl: 'Если цели не видно, стрелка у края покажет направление.' },
+    track: { name: 'Трекинг', desc: 'Цель движется. Веди прицел непрерывно, стрелять не нужно. Считается доля времени, когда прицел на цели.', ctl: 'Палец не отрывай. Двигай подушечкой, без нажима.' }
+  };
+  var SIZES = { s: 0.9, m: 1.5, l: 2.4 };
+  var cam = { yaw: 0, pitch: 0 };
+  var target = null;
+  var run = { state: 'idle' };
+  var moves = [];
+  var hitAt = 0, fireAt = 0;
+  var cv = $('cv'), ctx = cv.getContext('2d');
+  var W = 300, H = 300, DPR = 1;
+  var tokens = {};
+
+  function readTokens() {
+    var cs = getComputedStyle(document.documentElement);
+    ['--cv-sky', '--cv-ground', '--cv-grid', '--cv-label', '--cv-target', '--cv-target-ring', '--cv-cross', '--cv-cross-edge', '--fg', '--muted', '--accent', '--surface', '--good', '--bad', '--warn', '--font-num'].forEach(function (n) {
+      tokens[n] = cs.getPropertyValue(n).trim();
+    });
+  }
+  readTokens();
+  try {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTokens);
+    new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  } catch (e) {}
+
+  var INS = { t: 0, r: 0, b: 0, l: 0 }, editFire = false, fireDragId = null;
+  function resize() {
+    var r = $('stageInner').getBoundingClientRect();
+    if (r.width < 10) return;
+    try { var cs = getComputedStyle($('probe')); INS = { t: parseFloat(cs.paddingTop) || 0, r: parseFloat(cs.paddingRight) || 0, b: parseFloat(cs.paddingBottom) || 0, l: parseFloat(cs.paddingLeft) || 0 }; } catch (e) {}
+    W = r.width; H = r.height; DPR = Math.min(3, window.devicePixelRatio || 1);
+    cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  try { new ResizeObserver(resize).observe($('stageInner')); } catch (e) { window.addEventListener('resize', resize); }
+  resize();
+
+  function degPerPx() { return 360 / (S.cm360 * S.pxPerCm) * (S.ads ? S.adsMult : 1); }
+  function focal() { return (W / 2) / Math.tan(S.fov * D2R / 2); }
+
+  function project(yawT, pitchT) {
+    var yt = yawT * D2R, pt = pitchT * D2R;
+    var x = Math.cos(pt) * Math.sin(yt), y = Math.sin(pt), z = Math.cos(pt) * Math.cos(yt);
+    var cy = Math.cos(-cam.yaw * D2R), sy = Math.sin(-cam.yaw * D2R);
+    var x1 = x * cy + z * sy, z1 = -x * sy + z * cy;
+    var cp = Math.cos(cam.pitch * D2R), sp = Math.sin(cam.pitch * D2R);
+    var y2 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
+    return { x: x1, y: y2, z: z2 };
+  }
+  function toScreen(p, f) { return { x: W / 2 + f * p.x / p.z, y: H / 2 - f * p.y / p.z }; }
+
+  /* ---------- ввод: свайп и кнопка огня ---------- */
+  function fireBtn() {
+    var r = S.fire.r;
+    return { x: clamp(S.fire.x * W, r + INS.l + 6, W - r - INS.r - 6), y: clamp(S.fire.y * H, r + INS.t + 6, H - r - INS.b - 6), r: r };
+  }
+  function moveFire(e) {
+    var rc = cv.getBoundingClientRect();
+    S.fire.x = clamp((e.clientX - rc.left) / W, 0, 1); S.fire.y = clamp((e.clientY - rc.top) / H, 0, 1);
+  }
+  var aimId = null, lx = 0, ly = 0, fireId = null;
+
+  function applyDelta(dx, dy) {
+    var k = degPerPx();
+    var dyaw = dx * k;
+    var dp = (S.invertY ? dy : -dy) * k * S.yRatio;
+    cam.yaw = wrap180(cam.yaw + dyaw);
+    cam.pitch = clamp(cam.pitch + dp, -85, 85);
+    moves.push({ t: performance.now(), a: dyaw, b: dp });
+  }
+  cv.addEventListener('pointerdown', function (e) {
+    if (editFire) { fireDragId = e.pointerId; moveFire(e); try { cv.setPointerCapture(e.pointerId); } catch (er) {} e.preventDefault(); return; }
+    var r = cv.getBoundingClientRect();
+    var x = e.clientX - r.left, y = e.clientY - r.top;
+    var fb = fireBtn();
+    if (S.mode !== 'track' && run.state === 'running' && Math.hypot(x - fb.x, y - fb.y) <= fb.r + 10) {
+      fireId = e.pointerId; fireAt = performance.now(); doFire(); try { cv.setPointerCapture(e.pointerId); } catch (er) {}
+      e.preventDefault(); return;
+    }
+    if (aimId === null) { aimId = e.pointerId; lx = e.clientX; ly = e.clientY; try { cv.setPointerCapture(e.pointerId); } catch (er) {} }
+    e.preventDefault();
+  });
+  cv.addEventListener('pointermove', function (e) {
+    if (editFire) { if (e.pointerId === fireDragId) moveFire(e); e.preventDefault(); return; }
+    if (e.pointerId !== aimId) return;
+    var list = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
+    for (var i = 0; i < list.length; i++) { applyDelta(list[i].clientX - lx, list[i].clientY - ly); lx = list[i].clientX; ly = list[i].clientY; }
+    e.preventDefault();
+  });
+  function up(e) { if (e.pointerId === fireDragId) { fireDragId = null; save(); } if (e.pointerId === aimId) aimId = null; if (e.pointerId === fireId) fireId = null; }
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  cv.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+  /* ---------- цели ---------- */
+  function spawn(now) {
+    var r = SIZES[S.size];
+    if (S.mode === 'micro') {
+      var d = rand(2, 6), th = rand(0, Math.PI * 2);
+      target = { yaw: wrap180(cam.yaw + d * Math.cos(th)), pitch: clamp(cam.pitch + d * Math.sin(th), -40, 40), r: r, spawnAt: now };
+    } else if (S.mode === 'flick') {
+      var s = Math.random() < 0.5 ? -1 : 1;
+      target = { yaw: wrap180(cam.yaw + s * rand(30, 80)), pitch: rand(-10, 12), r: r, spawnAt: now };
+    } else {
+      var base = cam.yaw, pb = clamp(cam.pitch, -10, 10);
+      target = { yaw: base, pitch: pb, r: r * 1.3, spawnAt: now, base: base, pb: pb, vel: (Math.random() < 0.5 ? -1 : 1) * rand(12, 24), flipIn: rand(0.6, 1.5), t: 0 };
+    }
+  }
+  function onTarget() {
+    if (!target) return false;
+    var p = project(target.yaw, target.pitch);
+    if (p.z <= 0.05) return false;
+    var f = focal(), s = toScreen(p, f), r = f * Math.tan(target.r * D2R) / p.z;
+    return Math.hypot(s.x - W / 2, s.y - H / 2) <= r;
+  }
+  function recentMove(now) {
+    var a = 0, b = 0;
+    moves = moves.filter(function (m) { return now - m.t < 400; });
+    moves.forEach(function (m) { if (now - m.t < 200) { a += m.a; b += m.b; } });
+    return { a: a, b: b };
+  }
+  function doFire() {
+    if (run.state !== 'running' || S.mode === 'track' || !target) return;
+    var now = performance.now();
+    run.shots++;
+    if (onTarget()) {
+      run.hits++; run.ttSum += now - target.spawnAt; hitAt = now; spawn(now);
+    } else {
+      var m = recentMove(now), mag = Math.hypot(m.a, m.b);
+      var ex = wrap180(target.yaw - cam.yaw), ey = target.pitch - cam.pitch;
+      if (mag < 0.25) { run.side++; return; }
+      var ux = m.a / mag, uy = m.b / mag;
+      var par = ex * ux + ey * uy, perp = Math.abs(ex * uy - ey * ux);
+      if (perp > Math.abs(par)) run.side++;
+      else if (par > 0) run.under++;
+      else run.over++;
+    }
+  }
+
+  /* ---------- сессия ---------- */
+  function newRun() { return { state: 'running', remaining: S.dur, hits: 0, shots: 0, over: 0, under: 0, side: 0, ttSum: 0, onT: 0, elapsed: 0 }; }
+  function startSession() {
+    run = newRun(); moves = [];
+    setFull(true);
+    $('startOv').hidden = true; $('endOv').hidden = true;
+    spawn(performance.now());
+  }
+  function endSession(silent) {
+    if (run.state !== 'running') return;
+    run.state = 'done';
+    var r = run, acc = r.shots ? r.hits / r.shots : 0, onPct = r.elapsed ? r.onT / r.elapsed : 0;
+    var entry = { ts: Date.now(), mode: S.mode, dur: S.dur, hits: r.hits, shots: r.shots, over: r.over, under: r.under, side: r.side, onPct: onPct, cm: S.cm360, size: S.size };
+    if (!silent) {
+      hist.unshift(entry); hist = hist.slice(0, 10); saveHist(); renderHist();
+      showEnd(entry);
+    } else { $('startOv').hidden = false; setFull(false); }
+    target = null;
+  }
+  function tipFor(e) {
+    if (e.mode === 'track') {
+      if (e.onPct < 0.4) return 'На цели меньше 40% времени. Веди прицел без остановок и не отрывай палец. Сенсу пока не меняй.';
+      if (e.onPct < 0.65) return 'Неплохо. Следи, чтобы палец не прилипал на стыке: двигай подушечкой, без нажима.';
+      return 'Трекинг уверенный. Усложни: размер цели «Маленькая».';
+    }
+    if (e.shots < 6) return 'Слишком мало выстрелов для выводов. Играй активнее.';
+    var miss = e.shots - e.hits;
+    if (miss < 3) return 'Почти без промахов. Уменьши цель или переходи на «Флик».';
+    if (e.over >= e.under * 1.5 && e.over >= 3) return 'Перелётов больше: ты проскакиваешь цель. Давай меньше нажима и короче свайп, сенсу не трогай.';
+    if (e.under >= e.over * 1.5 && e.under >= 3) return 'Недолётов больше: не хватает хода пальца. Если так остаётся несколько сессий подряд, подними сенсу на 3–5 пунктов в игре и повтори замер.';
+    return 'Промахи вперемешку: перелёт, недолёт и в сторону. Главное сейчас стабильность хвата, сенсу не меняй.';
+  }
+  function showEnd(e) {
+    var s = $('endStats'); s.innerHTML = '';
+    function st(b, l) { var d = document.createElement('div'); d.className = 'stat'; var x = document.createElement('b'); x.textContent = b; var y = document.createElement('span'); y.textContent = l; d.appendChild(x); d.appendChild(y); s.appendChild(d); }
+    if (e.mode === 'track') { st(fmt(e.onPct * 100, 0) + '%', 'на цели'); st(String(e.dur), 'секунд'); st(fmt(e.cm, 1), 'см / 360°'); }
+    else {
+      st(e.hits + ' / ' + e.shots, 'попадания'); st(fmt(e.shots ? e.hits / e.shots * 100 : 0, 0) + '%', 'точность'); st(e.hits ? fmt(run.ttSum / e.hits / 1000, 2) + ' с' : '—', 'до цели');
+      st(String(e.over), 'перелёт'); st(String(e.under), 'недолёт'); st(String(e.side), 'мимо');
+    }
+    $('endTitle').textContent = MODES[e.mode].name + ', ' + e.dur + ' с';
+    $('endTip').textContent = tipFor(e);
+    $('endOv').hidden = false;
+  }
+  function renderHist() {
+    var h = $('hist'); h.innerHTML = '';
+    if (!hist.length) { var d = document.createElement('div'); d.textContent = 'Пока пусто. Результаты появятся после первой сессии.'; h.appendChild(d); return; }
+    hist.forEach(function (e) {
+      var d = document.createElement('div');
+      var dt = new Date(e.ts);
+      var when = dt.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + dt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      var res = e.mode === 'track' ? ('на цели ' + fmt(e.onPct * 100, 0) + '%') : (e.hits + '/' + e.shots + ' (' + fmt(e.shots ? e.hits / e.shots * 100 : 0, 0) + '%), перелёт ' + e.over + ', недолёт ' + e.under);
+      [when, MODES[e.mode].name + ' ' + e.dur + ' с', res, fmt(e.cm, 1) + ' см/360'].forEach(function (t) { var s = document.createElement('span'); s.textContent = t; d.appendChild(s); });
+      h.appendChild(d);
+    });
+  }
+  $('clearHist').onclick = function () { hist = []; saveHist(); renderHist(); };
+  $('startBtn').onclick = startSession;
+  $('againBtn').onclick = startSession;
+  $('closeBtn').onclick = function () { $('endOv').hidden = true; $('startOv').hidden = false; setFull(false); };
+
+  /* ---------- цикл ---------- */
+  var lastT = performance.now();
+  function update(dt, now) {
+    if (run.state !== 'running') return;
+    run.remaining -= dt; run.elapsed += dt;
+    if (S.mode === 'track' && target) {
+      target.t += dt; target.yaw = wrap180(target.yaw + target.vel * dt);
+      target.flipIn -= dt;
+      if (target.flipIn <= 0) { target.vel = (Math.random() < 0.5 ? -1 : 1) * rand(10, 26); target.flipIn = rand(0.5, 1.6); }
+      var off = wrap180(target.yaw - target.base);
+      if (Math.abs(off) > 35) target.vel = -Math.sign(off) * Math.abs(target.vel);
+      target.pitch = target.pb + 6 * Math.sin(target.t * 0.9);
+      if (onTarget()) run.onT += dt;
+    }
+    if (run.remaining <= 0) { run.remaining = 0; endSession(false); }
+  }
+  function line(x1, y1, x2, y2) { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
+
+  function draw(now) {
+    var f = focal();
+    ctx.fillStyle = tokens['--cv-sky']; ctx.fillRect(0, 0, W, H);
+    var hy = H / 2 + f * Math.tan(cam.pitch * D2R);
+    if (hy < H) { ctx.fillStyle = tokens['--cv-ground']; ctx.fillRect(0, Math.max(0, hy), W, H - Math.max(0, hy)); }
+    ctx.strokeStyle = tokens['--cv-grid']; ctx.lineWidth = 1; ctx.globalAlpha = 0.9;
+    var k, a, pa, pb, sa, sb;
+    for (k = -180; k < 180; k += 15) {
+      pa = project(k, -25); pb = project(k, 25);
+      if (pa.z > 0.05 && pb.z > 0.05) { sa = toScreen(pa, f); sb = toScreen(pb, f); line(sa.x, sa.y, sb.x, sb.y); }
+    }
+    [-20, -10, 0, 10, 20].forEach(function (pitchRow) {
+      ctx.beginPath(); var pen = false;
+      for (var y = cam.yaw - 110; y <= cam.yaw + 110; y += 5) {
+        var p = project(y, pitchRow);
+        if (p.z <= 0.05) { pen = false; continue; }
+        var s = toScreen(p, f);
+        if (!pen) { ctx.moveTo(s.x, s.y); pen = true; } else ctx.lineTo(s.x, s.y);
+      }
+      ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = tokens['--cv-label']; ctx.font = '500 11px ' + tokens['--font-num']; ctx.textAlign = 'center';
+    for (k = -180; k < 180; k += 45) {
+      var pl = project(k, 0);
+      if (pl.z > 0.05) { var sl = toScreen(pl, f); ctx.fillText(((k + 360) % 360) + '°', sl.x, sl.y - 6); }
+    }
+    /* цель */
+    if (target) {
+      var p = project(target.yaw, target.pitch);
+      if (p.z > 0.05) {
+        var s = toScreen(p, f), r = Math.max(3, f * Math.tan(target.r * D2R) / p.z);
+        if (s.x > -r && s.x < W + r && s.y > -r && s.y < H + r) {
+          ctx.fillStyle = tokens['--cv-target']; ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, 6.2832); ctx.fill();
+          ctx.strokeStyle = tokens['--cv-target-ring']; ctx.lineWidth = Math.max(1.5, r * 0.18); ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, 6.2832); ctx.stroke();
+        } else arrow(p);
+      } else arrow(p);
+    }
+    function arrow(p) {
+      if (S.mode === 'micro') return;
+      var ang = Math.atan2(-p.y, p.x), R = Math.min(W, H) * 0.36;
+      var ax = W / 2 + Math.cos(ang) * R, ay = H / 2 + Math.sin(ang) * R;
+      ctx.fillStyle = tokens['--cv-target']; ctx.beginPath();
+      ctx.moveTo(ax + Math.cos(ang) * 14, ay + Math.sin(ang) * 14);
+      ctx.lineTo(ax + Math.cos(ang + 2.5) * 12, ay + Math.sin(ang + 2.5) * 12);
+      ctx.lineTo(ax + Math.cos(ang - 2.5) * 12, ay + Math.sin(ang - 2.5) * 12);
+      ctx.closePath(); ctx.fill();
+    }
+    /* прицел */
+    var cx = W / 2, cy = H / 2;
+    function cross(col, w) { ctx.strokeStyle = col; ctx.lineWidth = w; line(cx - 13, cy, cx - 4, cy); line(cx + 4, cy, cx + 13, cy); line(cx, cy - 13, cx, cy - 4); line(cx, cy + 4, cx, cy + 13); }
+    cross(tokens['--cv-cross-edge'], 4); cross(tokens['--cv-cross'], 2);
+    if (now - hitAt < 140) { ctx.strokeStyle = tokens['--good']; ctx.lineWidth = 2.5; line(cx - 12, cy - 12, cx - 7, cy - 7); line(cx + 12, cy - 12, cx + 7, cy - 7); line(cx - 12, cy + 12, cx - 7, cy + 7); line(cx + 12, cy + 12, cx + 7, cy + 7); }
+    /* HUD */
+    if (run.state === 'running' || run.state === 'done') {
+      var rem = Math.max(0, Math.ceil(run.remaining || 0));
+      ctx.textAlign = 'left'; ctx.fillStyle = tokens['--fg']; ctx.font = '700 30px ' + tokens['--font-num'];
+      ctx.fillText(String(Math.floor(rem / 60)).padStart(1, '0') + ':' + String(rem % 60).padStart(2, '0'), 14 + INS.l, 38 + INS.t);
+      ctx.font = '600 15px ' + tokens['--font-num']; ctx.fillStyle = tokens['--muted'];
+      if (S.mode === 'track') ctx.fillText('на цели ' + (run.elapsed ? Math.round(run.onT / run.elapsed * 100) : 0) + '%', 14 + INS.l, 58 + INS.t);
+      else {
+        ctx.fillText(run.hits + ' из ' + run.shots + ' · ' + (run.shots ? Math.round(run.hits / run.shots * 100) : 0) + '%', 14 + INS.l, 58 + INS.t);
+        ctx.fillText('перелёт ' + run.over + ' · недолёт ' + run.under + ' · мимо ' + run.side, 14 + INS.l, 78 + INS.t);
+      }
+      if (S.ads) { ctx.fillStyle = tokens['--accent']; ctx.fillText('ADS ×' + fmt(S.adsMult, 2), 14 + INS.l, H - 14 - INS.b); }
+      if (editFire || (S.mode !== 'track' && run.state === 'running')) {
+        var fb = fireBtn(), pressed = now - fireAt < 120;
+        ctx.globalAlpha = pressed ? 1 : 0.85; ctx.fillStyle = pressed ? tokens['--cv-target'] : tokens['--surface'];
+        ctx.beginPath(); ctx.arc(fb.x, fb.y, fb.r, 0, 6.2832); ctx.fill();
+        ctx.globalAlpha = 1; ctx.strokeStyle = tokens['--cv-target']; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(fb.x, fb.y, fb.r, 0, 6.2832); ctx.stroke();
+        ctx.fillStyle = tokens['--fg']; ctx.textAlign = 'center'; ctx.font = '700 15px ' + tokens['--font-num']; ctx.fillText('ОГОНЬ', fb.x, fb.y + 5);
+        if (editFire) { ctx.font = '600 14px ' + tokens['--font-num']; ctx.fillStyle = tokens['--muted']; ctx.fillText('Так будет выглядеть кнопка во время тренировки', W / 2, H - 16 - INS.b); }
+      }
+    }
+  }
+  function frame(now) {
+    var dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
+    update(dt, now); draw(now); requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  /* ---------- режимы, время, полный экран ---------- */
+  function setMode(m) {
+    S.mode = m; save(); run = { state: 'idle' }; target = null;
+    document.querySelectorAll('#modeRow .chip').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.mode === m); });
+    $('ovTitle').textContent = MODES[m].name; $('ovDesc').textContent = MODES[m].desc; $('ovCtl').textContent = MODES[m].ctl;
+    $('startOv').hidden = false; $('endOv').hidden = true;
+  }
+  document.querySelectorAll('#modeRow .chip').forEach(function (b) { b.onclick = function () { setMode(b.dataset.mode); }; });
+  function setDur(d) {
+    S.dur = d; save();
+    document.querySelectorAll('#durRow .chip').forEach(function (b) { b.setAttribute('aria-pressed', Number(b.dataset.dur) === d); });
+  }
+  document.querySelectorAll('#durRow .chip').forEach(function (b) { b.onclick = function () { setDur(Number(b.dataset.dur)); }; });
+  var apiFull = false;
+  function setFull(on) {
+    var st = $('stage');
+    if (st.classList.contains('full') === on) return;
+    st.classList.toggle('full', on); $('fsBtn').textContent = on ? 'Выйти' : 'На весь экран';
+    try { document.body.style.overflow = on ? 'hidden' : ''; } catch (e) {}
+    try {
+      if (on && st.requestFullscreen) { st.requestFullscreen().then(function () { apiFull = true; }).catch(function () {}); }
+      else if (!on && document.fullscreenElement && document.exitFullscreen) { apiFull = false; document.exitFullscreen().catch(function () {}); }
+    } catch (e) {}
+    setTimeout(resize, 30); setTimeout(resize, 200);
+  }
+  document.addEventListener('fullscreenchange', function () {
+    if (!document.fullscreenElement && apiFull) { apiFull = false; if (editFire) endEdit(); else { if (run.state === 'running') endSession(true); setFull(false); } }
+  });
+  $('fsBtn').onclick = function () {
+    var st = $('stage');
+    if (st.classList.contains('full')) { if (editFire) endEdit(); else { if (run.state === 'running') endSession(true); setFull(false); } }
+    else setFull(true);
+  };
+  function endEdit() { editFire = false; fireDragId = null; $('fireEdit').hidden = true; save(); setFull(false); $('startOv').hidden = false; }
+  $('fireEditBtn').onclick = function () {
+    if (run.state === 'running') endSession(true);
+    editFire = true; setFull(true);
+    $('startOv').hidden = true; $('endOv').hidden = true; $('fireEdit').hidden = false; $('fireSize').value = S.fire.r;
+  };
+  $('fireDone').onclick = endEdit;
+  $('fireReset').onclick = function () { S.fire = JSON.parse(JSON.stringify(DEF.fire)); $('fireSize').value = S.fire.r; save(); };
+  $('fireSize').oninput = function () { S.fire.r = Number($('fireSize').value); save(); };
+
+  /* ---------- настройки ---------- */
+  function link(numId, rangeId, key, min, max, dec) {
+    var n = $(numId), r = $(rangeId);
+    function show() { n.value = fmt(S[key], dec).replace(/\s/g, ''); r.value = S[key]; }
+    n.onchange = function () { var v = num(n.value); if (isFinite(v)) { S[key] = clamp(v, min, max); if (key === 'cm360') S.measured = true; save(); } show(); refreshSettings(); };
+    r.oninput = function () { S[key] = Number(r.value); if (key === 'cm360') S.measured = true; save(); n.value = fmt(S[key], dec).replace(/\s/g, ''); refreshSettings(); };
+    show();
+    return show;
+  }
+  var showers = [];
+  showers.push(link('cmNum', 'cmRange', 'cm360', 5, 120, 1));
+  showers.push(link('yNum', 'yRange', 'yRatio', 0.5, 1.5, 2));
+  showers.push(link('adsNum', 'adsRange', 'adsMult', 0.3, 1.5, 2));
+  showers.push(link('fovNum', 'fovRange', 'fov', 60, 120, 0));
+  $('adsOn').checked = S.ads; $('adsOn').onchange = function () { S.ads = $('adsOn').checked; save(); };
+  $('invY').checked = S.invertY; $('invY').onchange = function () { S.invertY = $('invY').checked; save(); };
+  $('sizeSel').value = S.size; $('sizeSel').onchange = function () { S.size = $('sizeSel').value; save(); };
+  function refreshSettings() {
+    $('degPerCm').textContent = 'Это ' + fmt(360 / S.cm360, 1) + '° камеры на каждый сантиметр свайпа.';
+    $('unmeasured').hidden = !!S.measured;
+  }
+
+  /* ---------- калибровка ---------- */
+  function longSideCm() { return Math.max(window.screen.width, window.screen.height) / S.pxPerCm; }
+  function swipeLen() {
+    var m = S.calc.lenSel;
+    if (m === 'ruler') return 5;
+    if (m === 'half') return longSideCm() / 2;
+    if (m === 'full') return longSideCm();
+    return num(S.calc.ownLen);
+  }
+  var measured = { hip: NaN, ads: NaN, mult: NaN };
+  function refreshCalib() {
+    var len = swipeLen();
+    $('lenInfo').textContent = 'Длина свайпа: ' + fmt(len, 1) + ' см';
+    $('ownLenRow').hidden = S.calc.lenSel !== 'own';
+    var nh = num(S.calc.nHip), na = num(S.calc.nAds);
+    measured.hip = nh > 0 && len > 0 ? nh * len : NaN;
+    measured.ads = na > 0 && len > 0 ? na * len : NaN;
+    measured.mult = isFinite(measured.hip) && isFinite(measured.ads) ? measured.hip / measured.ads : NaN;
+    var o = $('measOut'); o.innerHTML = '';
+    function st(b, l) { var d = document.createElement('div'); d.className = 'stat'; var x = document.createElement('b'); x.textContent = b; var y = document.createElement('span'); y.textContent = l; d.appendChild(x); d.appendChild(y); o.appendChild(d); }
+    st(isFinite(measured.hip) ? fmt(measured.hip, 1) + ' см' : '—', 'на 360°, без ADS');
+    st(isFinite(measured.ads) ? fmt(measured.ads, 1) + ' см' : '—', 'на 360°, с ADS');
+    st(isFinite(measured.mult) ? '×' + fmt(measured.mult, 2) : '—', 'множитель ADS');
+    $('applyMeas').disabled = !isFinite(measured.hip);
+    $('pxInfo').textContent = 'Сейчас: ' + fmt(S.pxPerCm, 1) + ' px на 1 см. Длинная сторона экрана ≈ ' + fmt(longSideCm(), 1) + ' см.';
+    $('cardBar').style.width = $('cardRange').value + 'px';
+
+    var tr = $('trOut'); tr.innerHTML = '';
+    function st2(b, l) { var d = document.createElement('div'); d.className = 'stat'; var x = document.createElement('b'); x.textContent = b; var y = document.createElement('span'); y.textContent = l; d.appendChild(x); d.appendChild(y); tr.appendChild(d); }
+    var cs = num(S.calc.trSens), td = num(S.calc.trDist), vx = num(S.calc.valX), vy = num(S.calc.valY);
+    if (S.calc.trUnit === 'in' && isFinite(td)) td = td * 2.54;
+    var newS = (cs > 0 && td > 0 && isFinite(measured.hip)) ? cs * td / measured.hip : NaN;
+    var yr = (vx > 0 && vy > 0) ? vy / vx : NaN;
+    st2(isFinite(newS) ? fmt(newS, 2) : '—', 'новая общая сенса');
+    st2(isFinite(newS) && isFinite(yr) ? fmt(newS * yr, 2) : '—', 'вертикаль (Y)');
+    var am = isFinite(measured.mult) ? measured.mult : S.adsMult;
+    st2(isFinite(newS) ? fmt(newS * am, 2) : '—', 'сенса ADS');
+    if (!isFinite(measured.hip)) { var w = document.createElement('p'); w.className = 'note warn'; w.textContent = 'Для расчёта нужен замер из блока 2.'; tr.appendChild(w); }
+  }
+  function bindCalc(id, key) {
+    var el = $(id); el.value = S.calc[key];
+    el.oninput = function () { S.calc[key] = el.value; save(); refreshCalib(); };
+    el.onchange = el.oninput;
+  }
+  bindCalc('nHip', 'nHip'); bindCalc('nAds', 'nAds'); bindCalc('ownLen', 'ownLen');
+  bindCalc('trSens', 'trSens'); bindCalc('trDist', 'trDist'); bindCalc('trUnit', 'trUnit'); bindCalc('valX', 'valX'); bindCalc('valY', 'valY');
+  $('lenSel').value = S.calc.lenSel; $('lenSel').onchange = function () { S.calc.lenSel = $('lenSel').value; save(); refreshCalib(); };
+  $('applyMeas').onclick = function () {
+    if (!isFinite(measured.hip)) return;
+    S.cm360 = clamp(measured.hip, 5, 120); S.measured = true;
+    if (isFinite(measured.mult)) S.adsMult = clamp(measured.mult, 0.3, 1.5);
+    var vx = num(S.calc.valX), vy = num(S.calc.valY);
+    if (vx > 0 && vy > 0) S.yRatio = clamp(vy / vx, 0.5, 1.5);
+    save(); showers.forEach(function (s) { s(); }); refreshSettings();
+    $('applyInfo').textContent = 'Применено: ' + fmt(S.cm360, 1) + ' см на 360°.';
+  };
+  $('cardRange').value = Math.round(5.398 * S.pxPerCm);
+  $('cardRange').oninput = function () { $('cardBar').style.width = $('cardRange').value + 'px'; };
+  $('cardApply').onclick = function () { S.pxPerCm = Number($('cardRange').value) / 5.398; save(); refreshCalib(); refreshSettings(); };
+  $('cardReset').onclick = function () { S.pxPerCm = IPHONE_PX; save(); $('cardRange').value = Math.round(5.398 * S.pxPerCm); refreshCalib(); refreshSettings(); };
+
+  refreshSettings(); setMode(S.mode); setDur(S.dur); renderHist(); refreshCalib();
+})();
+</script>
+
+</body>
+</html>
