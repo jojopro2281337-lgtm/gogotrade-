@@ -130,10 +130,10 @@ button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
 .tab {
-  background: none; border: 0; padding: 10px 14px; margin-bottom: -1px;
-  color: var(--muted); font-family: var(--font-num); font-weight: 600; font-size: 17px;
+  background: none; border: 0; padding: 10px 9px; margin-bottom: -1px; white-space: nowrap;
+  color: var(--muted); font-family: var(--font-num); font-weight: 600; font-size: 16px;
   border-bottom: 2px solid transparent;
 }
 .tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
@@ -194,6 +194,10 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
 .hist { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
 .hist div { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 6px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
 .hist div:last-child { border-bottom: 0; }
+.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+.steps li { padding-left: 4px; }
+.list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.banner { border-color: var(--warn); }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
 </style>
@@ -207,15 +211,24 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" id="tab-train" aria-selected="true" aria-controls="view-train">Тренировка</button>
     <button class="tab" role="tab" id="tab-calib" aria-selected="false" aria-controls="view-calib">Калибровка</button>
+    <button class="tab" role="tab" id="tab-sens" aria-selected="false" aria-controls="view-sens">Подбор сенсы</button>
   </div>
 
   <!-- ТРЕНИРОВКА -->
   <section id="view-train" role="tabpanel" aria-labelledby="tab-train" style="display:flex;flex-direction:column;gap:12px">
+    <div class="block banner" id="calBanner" hidden>
+      <p><b>Сначала откалибруй экран.</b> Без этого сантиметры в приложении будут неверными, если у тебя не iPhone 14 Pro Max.</p>
+      <div class="row"><button class="primary" id="bnGo" type="button">Откалибровать по карте</button><button class="ghost" id="bnIphone" type="button">У меня iPhone 14 Pro Max</button></div>
+    </div>
     <div class="row" id="modeRow" role="group" aria-label="Режим">
       <span class="lbl">Режим</span>
       <button class="chip" data-mode="micro" aria-pressed="true">Микро</button>
       <button class="chip" data-mode="flick" aria-pressed="false">Флик</button>
       <button class="chip" data-mode="track" aria-pressed="false">Трекинг</button>
+      <button class="chip" data-mode="peek" aria-pressed="false">Пик</button>
+      <button class="chip" data-mode="switch" aria-pressed="false">Свитч</button>
+      <button class="chip" data-mode="head" aria-pressed="false">Хедлайн</button>
+      <button class="chip" data-mode="react" aria-pressed="false">Реакция</button>
     </div>
     <div class="row" id="durRow" role="group" aria-label="Длительность">
       <span class="lbl">Время</span>
@@ -251,6 +264,7 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
             <p class="tip" id="endTip"></p>
             <div class="row">
               <button class="primary" id="againBtn" type="button">Ещё раз</button>
+              <button class="ghost" id="applyTestBtn" type="button" hidden>Поставить в тренажёре</button>
               <button class="ghost" id="closeBtn" type="button">Закрыть</button>
             </div>
           </div>
@@ -289,6 +303,26 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
             <option value="m">Средняя</option>
             <option value="l">Большая</option>
           </select>
+          <span class="note">В трекинге и пике размер задаёт дистанцию до персонажа: большая 5,7 м, средняя 8 м, маленькая 14,5 м. Рост на экране подогнан по ботам в тире Valorant Mobile (35%, 25% и 14% высоты экрана) при FOV 90.</span>
+        </div>
+        <div class="field">
+          <label for="csNum">Размер модельки, ×</label>
+          <div class="in"><input type="text" inputmode="decimal" id="csNum"><input type="range" id="csRange" min="0.6" max="1.6" step="0.05" aria-label="Размер модельки"></div>
+          <span class="note">Только для трекинга и пика. 1,00 = подгонка по ботам в тире. Больше 1 приближает персонажа.</span>
+        </div>
+        <div class="field">
+          <label for="spNum">Скорость персонажа, ×</label>
+          <div class="in"><input type="text" inputmode="decimal" id="spNum"><input type="range" id="spRange" min="0.6" max="1.6" step="0.05" aria-label="Скорость персонажа"></div>
+          <span class="note">Только для трекинга. Бег 6,2 м/с и шаг 3,1 м/с при ×1,00. Это приблизительные значения, а не данные игры: подкрути на глаз под то, как бегают боты в тире.</span>
+        </div>
+        <div class="field">
+          <label for="flickSel">Дальность фликов</label>
+          <select id="flickSel">
+            <option value="near">Близко, 10–30°</option>
+            <option value="mid">Средне, 20–50°</option>
+            <option value="far">Далеко, 35–80°</option>
+          </select>
+          <span class="note" id="flickInfo"></span>
         </div>
         <div class="field">
           <span class="fl">Кнопка огня</span>
@@ -380,6 +414,81 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
       <p class="note">Формула верна, если шкала сенсы линейная: больше сенса, меньше расстояние. После изменения нажми кнопку «расстояние / 360» ещё раз и сверь число с целью. Если не совпало, повтори подгонку с новым числом.</p>
     </div>
   </section>
+
+  <!-- ПОДБОР СЕНСЫ -->
+  <section id="view-sens" role="tabpanel" aria-labelledby="tab-sens" hidden style="display:flex;flex-direction:column;gap:12px">
+    <div class="block">
+      <h2>Как подобрать сенсу</h2>
+      <p class="note">Подходит для любой игры, где камера крутится свайпом. Сенсу сравнивают не по числам в настройках, а по сантиметрам, которые палец проходит на полный оборот камеры (см / 360°). У разных телефонов и игр числа в настройках значат разное, а сантиметры одинаковы.</p>
+      <ol class="steps">
+        <li><b>Экран, 1 минута.</b> Вкладка «Калибровка», блок 1: положи банковскую карту на экран, растяни полосу ровно до ширины карты и нажми «Применить по карте». Без этого сантиметры в приложении будут неверными, если у тебя не iPhone 14 Pro Max.</li>
+        <li><b>Замер своей сенсы в игре, 5 минут.</b> Зайди в тренировочный режим и встань лицом к стене. Выбери заметную точку и наведи на неё прицел. Положи карту на экран в зоне камеры и веди палец вдоль её длинной стороны (8,56 см) от края до края: это один свайп. Считай свайпы, пока камера не вернётся к точке. Лучше проверни 5 оборотов подряд и раздели число на 5: так ошибка на глаз почти пропадает. Свайпай горизонтально и стой на месте.</li>
+        <li><b>Внеси замер.</b> «Калибровка», блок 2: в «Длине одного свайпа» выбери «Своя длина» и впиши 8,56, потом число свайпов на оборот, затем нажми «Использовать в тренажёре». Теперь тренажёр крутит камеру так же, как игра.</li>
+        <li><b>Подбери сенсу.</b> Если нынешняя сенса не нравится, начни с калькулятора ниже: он показывает, сколько см на оборот нужно, чтобы нужный флик помещался в один свайп. Потом проверь тестом сенсы (три серии по 30 секунд).</li>
+        <li><b>Перенеси в игру.</b> Блок «Перенос в игру»: впиши сенсу в игре, свой замер и желаемые см. Поставь результат в игре, замерь заново (шаг 2) и сверь число. Не совпало: повтори расчёт с новым замером.</li>
+        <li><b>Не меняй сенсу неделю.</b> Руке нужно время привыкнуть. Меняй её, только если по тесту разница явная.</li>
+      </ol>
+    </div>
+
+    <div class="block">
+      <h2>Калькулятор: сколько см на оборот нужно</h2>
+      <p class="note">Реши, какой самый дальний флик хочешь делать одним свайпом и какой свайп тебе удобен. Это ориентир, а не закон: потом проверь тестом.</p>
+      <div class="grid2">
+        <div class="field">
+          <label for="swLen">Удобный свайп, см</label>
+          <div class="in"><input type="text" inputmode="decimal" id="swLen"></div>
+        </div>
+        <div class="field">
+          <label for="swAng">Самый дальний флик одним свайпом, °</label>
+          <div class="in"><input type="text" inputmode="decimal" id="swAng"></div>
+        </div>
+      </div>
+      <p class="note" id="swOut"></p>
+      <div class="row"><button class="ghost" id="swApply" type="button">Поставить в тренажёре</button></div>
+    </div>
+
+    <div class="block">
+      <h2>Тест сенсы: 3 × 30 секунд</h2>
+      <p class="note">Три серии режима «Микро» на разном расстоянии на оборот: на 20% быстрее центра, сам центр, на 25% медленнее. Порядок случайный. В конце приложение сравнит точность. 30 секунд это мало, поэтому повтори тест 2–3 раза и смотри на то, что повторяется.</p>
+      <div class="grid2">
+        <div class="field">
+          <label for="testCenter">Центр теста, см на оборот</label>
+          <div class="in"><input type="text" inputmode="decimal" id="testCenter"></div>
+        </div>
+      </div>
+      <div class="row"><button class="primary" id="testStart" type="button">Начать тест</button></div>
+    </div>
+
+    <div class="block">
+      <h2>Перенос в игру</h2>
+      <p class="note">Если шкала сенсы в игре линейная (больше число, меньше сантиметров на оборот), новая сенса = текущая × (твой замер ÷ желаемые см). После смены замерь заново: так проверишь, что шкала правда линейная.</p>
+      <div class="grid2">
+        <div class="field">
+          <label for="gsNow">Сенса в игре сейчас</label>
+          <div class="in"><input type="text" inputmode="decimal" id="gsNow"></div>
+        </div>
+        <div class="field">
+          <label for="gsCmNow">Твой замер сейчас, см на оборот</label>
+          <div class="in"><input type="text" inputmode="decimal" id="gsCmNow"></div>
+        </div>
+        <div class="field">
+          <label for="gsCmWant">Желаемые см на оборот</label>
+          <div class="in"><input type="text" inputmode="decimal" id="gsCmWant"></div>
+        </div>
+      </div>
+      <p class="note" id="gsOut"></p>
+    </div>
+
+    <div class="block">
+      <h2>Как читать результаты</h2>
+      <ul class="list">
+        <li>Перелётов заметно больше недолётов: камера слишком быстрая. Добавь 10–15% к см на оборот.</li>
+        <li>Недолётов больше перелётов: камера медленная или не хватает хода пальца. Убери 10–15%.</li>
+        <li>Флик не помещается в один свайп: уменьши см на оборот или поставь «Дальность фликов» поближе.</li>
+        <li>Промахи вперемешку: дело не в сенсе, а в хвате и нажиме. Тренируйся и сенсу не трогай.</li>
+      </ul>
+    </div>
+  </section>
 </div>
 
 <script>
@@ -388,12 +497,13 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
   var KEY = 'swipe-trainer-v1', HKEY = 'swipe-trainer-hist-v1';
   var IPHONE_PX = 60.4;
   var DEF = { cm360: 20, yRatio: 0.9, ads: false, adsMult: 0.8, fov: 90, size: 'm', invertY: false,
-    pxPerCm: IPHONE_PX, measured: false, fire: { x: 0.86, y: 0.78, r: 40 }, mode: 'micro', dur: 60,
+    pxPerCm: IPHONE_PX, measured: false, screenCal: false, flickRange: 'mid', charScale: 1, charSpeed: 1, fire: { x: 0.86, y: 0.78, r: 40 }, mode: 'micro', dur: 60,
+    sens: { swLen: 5, swAng: 70, gsNow: '', gsCmWant: '' },
     calc: { lenSel: 'ruler', ownLen: 5, nHip: '', nAds: '', trSens: 1, trDist: '', trUnit: 'cm', valX: 50, valY: 45 } };
   var S = JSON.parse(JSON.stringify(DEF));
   try {
     var raw = localStorage.getItem(KEY);
-    if (raw) { var p = JSON.parse(raw); for (var k in p) { if (k === 'calc') { for (var c in p.calc) S.calc[c] = p.calc[c]; } else S[k] = p[k]; } }
+    if (raw) { var p = JSON.parse(raw); for (var k in p) { if ((k === 'calc' || k === 'sens') && p[k]) { for (var c in p[k]) S[k][c] = p[k][c]; } else S[k] = p[k]; } }
   } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
   var hist = [];
@@ -410,35 +520,48 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
 
   /* ---------- вкладки ---------- */
   function showTab(name) {
-    var t = name === 'train';
-    $('tab-train').setAttribute('aria-selected', t); $('tab-calib').setAttribute('aria-selected', !t);
-    $('view-train').hidden = !t; $('view-calib').hidden = t;
-    if (!t && run.state === 'running') endSession(true);
-    if (!t) { if (editFire) endEdit(); setFull(false); }
-    if (t) resize();
+    ['train', 'calib', 'sens'].forEach(function (n) {
+      $('tab-' + n).setAttribute('aria-selected', n === name); $('view-' + n).hidden = n !== name;
+    });
+    if (name !== 'train') { if (run.state === 'running') endSession(true); if (editFire) endEdit(); setFull(false); testState = null; }
+    if (name === 'train') resize();
+    if (name === 'calib') refreshCalib();
+    if (name === 'sens') { var cmTxt = fmt(S.cm360, 1).replace(/\s/g, ''); $('testCenter').value = cmTxt; $('gsCmNow').value = cmTxt; refreshSens(); }
   }
   $('tab-train').onclick = function () { showTab('train'); };
-  $('tab-calib').onclick = function () { showTab('calib'); refreshCalib(); };
+  $('tab-calib').onclick = function () { showTab('calib'); };
+  $('tab-sens').onclick = function () { showTab('sens'); };
 
   /* ---------- состояние сцены ---------- */
   var MODES = {
-    micro: { name: 'Микро', desc: 'Цели появляются в 2–6° от прицела. Тренирует микродоводку: короткие поправки подушечкой пальца без отрыва.', ctl: 'Свайп по сцене вращает камеру. Кнопка «Огонь» справа внизу.' },
-    flick: { name: 'Флик', desc: 'Цели далеко от прицела, 30–80° в стороны. Быстрый свайп и точная остановка на цели.', ctl: 'Если цели не видно, стрелка у края покажет направление.' },
-    track: { name: 'Трекинг', desc: 'Цель движется. Веди прицел непрерывно, стрелять не нужно. Считается доля времени, когда прицел на цели.', ctl: 'Палец не отрывай. Двигай подушечкой, без нажима.' }
+    micro: { name: 'Микро', desc: 'Цели появляются в 2–6° от прицела. Тренирует микродоводку: короткие поправки подушечкой пальца без отрыва. Цели не уходят выше сетки: если камера уехала, новые цели сами тянут её обратно.', ctl: 'Свайп по сцене вращает камеру. Кнопка «Огонь» там, где ты её поставил.' },
+    flick: { name: 'Флик', desc: 'Цели в стороне от прицела. Дальность выбирается в настройках («Дальность фликов»), по умолчанию 20–50°, чтобы хватало одного свайпа. Быстрый свайп и точная остановка.', ctl: 'Если цели не видно, стрелка у края покажет направление.' },
+    track: { name: 'Трекинг', desc: 'Персонаж ведёт себя как противник в игре: стрейфы, резкие остановки, присед, редкие прыжки, смена дистанции. Стрелять не нужно. Считается время на теле и на голове.', ctl: 'Палец не отрывай. Размер цели задаёт дистанцию: большая 5,7 м, средняя 8 м, маленькая 14,5 м.' },
+    peek: { name: 'Пик', desc: 'Держи прицел чуть за краем угла на уровне головы. Из-за угла выскакивает противник на секунду-другую, успей попасть. Выстрел до появления считается ранним. Каждые три пика угол меняется.', ctl: 'Колечко у угла показывает идеальное место прицела. Размер цели задаёт дистанцию.' },
+    switch: { name: 'Свитч', desc: 'На сцене сразу три цели. Убей все три в любом порядке, сразу появится новая тройка. Тренирует переключение между целями.', ctl: 'Стрелки у краёв показывают, где остались цели.' },
+    head: { name: 'Хедлайн', desc: 'Цели на уровне головы, справа и слева по очереди. Держи прицел на линии головы: отклонение по вертикали считается.', ctl: 'Свайпай строго вбок, не подтягивай палец вверх-вниз. Две тонкие линии — допуск ±1°.' },
+    react: { name: 'Реакция', desc: 'Прицел стоит, цель появляется рядом после случайной паузы. Стреляй как можно быстрее. Выстрел до появления цели считается ранним.', ctl: 'Смотри в центр, палец держи над кнопкой «Огонь».' }
   };
   var SIZES = { s: 0.9, m: 1.5, l: 2.4 };
+  var DIST = { s: 14.5, m: 8.1, l: 5.7 };  /* подогнано по ботам в тире: рост на экране 14%, 25%, 35% высоты, FOV 90, горизонтальный экран */
+  var FLICK = { near: [10, 30], mid: [20, 50], far: [35, 80] };
+  var HOME = { yaw: 0, pitch: 0 };
+  var WALL_DEG = 40;
+  var CH = { headR: 0.13, torsoTop: 0.22, torsoBot: 0.98, torsoHW: 0.27, legHW: 0.19, legBot: 1.72 };
   var cam = { yaw: 0, pitch: 0 };
-  var target = null;
+  var target = null, targets = [];
   var run = { state: 'idle' };
+  var testState = null;
   var moves = [];
-  var hitAt = 0, fireAt = 0;
+  var hitAt = 0, fireAt = 0, headSide = 1;
   var cv = $('cv'), ctx = cv.getContext('2d');
   var W = 300, H = 300, DPR = 1;
   var tokens = {};
+  var fin = function (v) { return typeof v === 'number' && isFinite(v); };
 
   function readTokens() {
     var cs = getComputedStyle(document.documentElement);
-    ['--cv-sky', '--cv-ground', '--cv-grid', '--cv-label', '--cv-target', '--cv-target-ring', '--cv-cross', '--cv-cross-edge', '--fg', '--muted', '--accent', '--surface', '--good', '--bad', '--warn', '--font-num'].forEach(function (n) {
+    ['--cv-sky', '--cv-ground', '--cv-grid', '--cv-label', '--cv-target', '--cv-target-ring', '--cv-cross', '--cv-cross-edge', '--fg', '--muted', '--accent', '--surface', '--surface2', '--line', '--good', '--bad', '--warn', '--font-num'].forEach(function (n) {
       tokens[n] = cs.getPropertyValue(n).trim();
     });
   }
@@ -460,7 +583,8 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
   try { new ResizeObserver(resize).observe($('stageInner')); } catch (e) { window.addEventListener('resize', resize); }
   resize();
 
-  function degPerPx() { return 360 / (S.cm360 * S.pxPerCm) * (S.ads ? S.adsMult : 1); }
+  function effCm() { return testState ? testState.cands[testState.idx] : S.cm360; }
+  function degPerPx() { return 360 / (effCm() * S.pxPerCm) * (S.ads && !testState ? S.adsMult : 1); }
   function focal() { return (W / 2) / Math.tan(S.fov * D2R / 2); }
 
   function project(yawT, pitchT) {
@@ -490,7 +614,7 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
     var dyaw = dx * k;
     var dp = (S.invertY ? dy : -dy) * k * S.yRatio;
     cam.yaw = wrap180(cam.yaw + dyaw);
-    cam.pitch = clamp(cam.pitch + dp, -85, 85);
+    cam.pitch = clamp(cam.pitch + dp, -60, 60);
     moves.push({ t: performance.now(), a: dyaw, b: dp });
   }
   cv.addEventListener('pointerdown', function (e) {
@@ -516,93 +640,324 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
   cv.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
-  /* ---------- цели ---------- */
-  function spawn(now) {
-    var r = SIZES[S.size];
-    if (S.mode === 'micro') {
-      var d = rand(2, 6), th = rand(0, Math.PI * 2);
-      target = { yaw: wrap180(cam.yaw + d * Math.cos(th)), pitch: clamp(cam.pitch + d * Math.sin(th), -40, 40), r: r, spawnAt: now };
-    } else if (S.mode === 'flick') {
-      var s = Math.random() < 0.5 ? -1 : 1;
-      target = { yaw: wrap180(cam.yaw + s * rand(30, 80)), pitch: rand(-10, 12), r: r, spawnAt: now };
-    } else {
-      var base = cam.yaw, pb = clamp(cam.pitch, -10, 10);
-      target = { yaw: base, pitch: pb, r: r * 1.3, spawnAt: now, base: base, pb: pb, vel: (Math.random() < 0.5 ? -1 : 1) * rand(12, 24), flipIn: rand(0.6, 1.5), t: 0 };
-    }
+  /* ---------- персонаж (трекинг, пик) ---------- */
+  function charScreen(yaw, pitch, dist) {
+    var p = project(yaw, pitch);
+    if (p.z <= 0.05) return null;
+    var f = focal(), s = toScreen(p, f);
+    return { x: s.x, y: s.y, s: f / (dist * p.z) };
   }
-  function onTarget() {
-    if (!target) return false;
-    var p = project(target.yaw, target.pitch);
+  /* 0 мимо, 1 тело, 2 голова. Координаты в метрах от центра головы, вниз положительно */
+  function charHit(t, c) {
+    var dx = (W / 2 - c.x) / c.s, dy = (H / 2 - c.y) / c.s, cr = t.cr || 0;
+    if (Math.hypot(dx, dy) <= CH.headR) return 2;
+    if (Math.abs(dx) <= CH.torsoHW && dy >= CH.torsoTop && dy <= CH.torsoBot) return 1;
+    if (Math.abs(dx) <= CH.legHW && dy > CH.torsoBot && dy <= CH.legBot - cr) return 1;
+    return 0;
+  }
+  function trkNew() {
+    var d = (DIST[S.size] || DIST.m) / S.charScale;
+    return { kind: 'char', base: cam.yaw, pb: 0, d: d, d0: d, dT: d, x: 0, v: 0, dir: Math.random() < 0.5 ? -1 : 1, st: 'run', tm: rand(0.3, 0.7),
+      cr: 0, crT: 0, jy: 0, jT: 0, phase: 0, yaw: cam.yaw, pitch: 0, spawnAt: performance.now() };
+  }
+  /* Движение по видео ботов из тира: ~50% времени стоят, рывки/шаги, остановка плавная (~0,2 с), редкие присед и прыжок */
+  function trkStep(t, dt) {
+    t.tm -= dt;
+    var halfW = clamp(0.4 * t.d0, 3.2, 7);
+    if (t.tm <= 0) {
+      if (t.st === 'run' || t.st === 'walk') {
+        if (Math.random() < 0.55) { t.st = 'stop'; t.tm = rand(0.3, 0.9); }
+        else { t.dir = -t.dir; t.st = Math.random() < 0.2 ? 'walk' : 'run'; t.tm = rand(0.22, 0.65); }
+      } else {
+        if (Math.random() < 0.5) t.dir = -t.dir;
+        t.st = Math.random() < 0.25 ? 'walk' : 'run'; t.tm = rand(0.3, 0.9);
+      }
+      if (t.st === 'stop' && Math.random() < 0.3 && t.crT <= 0) t.crT = rand(0.5, 1.0);
+      if (t.st === 'run' && Math.random() < 0.1 && t.jT <= 0) t.jT = 0.7;
+      if (Math.random() < 0.15) t.dT = t.d0 * rand(0.8, 1.25);
+    }
+    if (t.x > halfW && t.dir > 0) { t.dir = -1; if (t.st === 'stop') { t.st = 'run'; t.tm = 0.4; } }
+    if (t.x < -halfW && t.dir < 0) { t.dir = 1; if (t.st === 'stop') { t.st = 'run'; t.tm = 0.4; } }
+    var vt = t.st === 'stop' ? 0 : (t.st === 'walk' ? 3.1 : 6.2) * S.charSpeed * t.dir;
+    var acc = (Math.abs(vt) < Math.abs(t.v) || vt * t.v < 0) ? 32 : 40, step = acc * dt;
+    t.v += clamp(vt - t.v, -step, step);
+    t.x += t.v * dt;
+    t.d += (t.dT - t.d) * Math.min(1, dt * 1.2);
+    if (t.crT > 0) t.crT -= dt;
+    t.cr += ((t.crT > 0 ? 0.55 : 0) - t.cr) * Math.min(1, dt * 14);
+    if (t.jT > 0) { t.jT -= dt; var s = 1 - clamp(t.jT / 0.7, 0, 1); t.jy = 4 * s * (1 - s); } else t.jy = 0;
+    t.phase += Math.abs(t.v) * dt * 2.2;
+    t.yaw = wrap180(t.base + Math.atan(t.x / t.d) / D2R);
+    t.pitch = t.pb + Math.atan((-t.cr + t.jy) / t.d) / D2R;
+  }
+
+  /* ---------- пик из-за угла ---------- */
+  function peekNew(now) {
+    var cy = wrap180(HOME.yaw + rand(-40, 40));
+    return { kind: 'peek', cy: cy, open: Math.random() < 0.5 ? -1 : 1, d: (DIST[S.size] || DIST.m) / S.charScale, u: -0.5, ph: 'wait', tm: rand(1.0, 2.2),
+      uMax: rand(1.1, 1.6), hold: rand(0.4, 0.85), cnt: 0, yaw: cy, pitch: 0, spawnAt: now, cr: 0 };
+  }
+  function peekNext(t) {
+    t.cnt++; t.ph = 'wait'; t.u = -0.5; t.tm = rand(0.8, 2.0); t.uMax = rand(1.1, 1.6); t.hold = rand(0.4, 0.85);
+    if (t.cnt % 3 === 0) { t.open = Math.random() < 0.5 ? -1 : 1; t.cy = wrap180(HOME.yaw + rand(-40, 40)); }
+  }
+  function peekStep(t, dt, now) {
+    t.tm -= dt;
+    if (t.ph === 'wait') {
+      if (t.tm <= 0) {
+        t.ph = 'out'; t.spawnAt = now; run.peeks++;
+        var iy = wrap180(t.cy + t.open * Math.atan(0.3 / t.d) / D2R);
+        run.preSum += Math.hypot(wrap180(cam.yaw - iy), cam.pitch);
+      }
+    } else if (t.ph === 'out') {
+      t.u += 4.2 * dt; if (t.u >= t.uMax) { t.u = t.uMax; t.ph = 'hold'; t.tm = t.hold; }
+    } else if (t.ph === 'hold') {
+      if (t.tm <= 0) t.ph = 'back';
+    } else if (t.ph === 'back') {
+      t.u -= 5.5 * dt; if (t.u <= -0.5) peekNext(t);
+    }
+    t.yaw = wrap180(t.cy + t.open * Math.atan(t.u / t.d) / D2R); t.pitch = 0;
+  }
+  function peekHit(t) {
+    var c = charScreen(t.yaw, t.pitch, t.d);
+    if (!c) return 0;
+    var ux = t.open * wrap180(cam.yaw - t.cy);
+    if (ux < 0 && ux > -WALL_DEG) return 0;
+    return charHit(t, c);
+  }
+
+  /* ---------- цели ---------- */
+  function angLerp(a, b, t) { return a + Math.atan2(Math.sin(b - a), Math.cos(b - a)) * t; }
+  /* Микро-цель рядом с прицелом. Если камера ушла от центра, цели смещаются в сторону центра, поэтому дрейф не копится */
+  function spawnMicro(now, r, dmin, dmax) {
+    var d = rand(dmin, dmax), th = rand(0, 6.2832);
+    var hx = wrap180(HOME.yaw - cam.yaw), hy = HOME.pitch - cam.pitch, hd = Math.hypot(hx, hy);
+    if (hd > 6) th = angLerp(th, Math.atan2(hy, hx), clamp((hd - 6) / 14, 0.4, 1));
+    var ty = clamp(cam.pitch + d * Math.sin(th), -13, 13);
+    var tx = wrap180(cam.yaw + d * Math.cos(th));
+    var off = wrap180(tx - HOME.yaw);
+    if (Math.abs(off) > 40) tx = wrap180(HOME.yaw + (off > 0 ? 40 : -40));
+    return { yaw: tx, pitch: ty, r: r, spawnAt: now };
+  }
+  function spawnSet(now) {
+    var r = SIZES[S.size], zones = [[-42, -16], [-9, 9], [16, 42]];
+    targets = zones.map(function (z) { return { yaw: wrap180(HOME.yaw + rand(z[0], z[1])), pitch: rand(-9, 9), r: r, spawnAt: now }; });
+    run.lastEv = now;
+  }
+  function spawnReact(now) {
+    target = { vis: false, showAt: now + rand(700, 2200), yaw: cam.yaw, pitch: cam.pitch, r: SIZES[S.size], spawnAt: now };
+  }
+  function spawn(now) {
+    var r = SIZES[S.size], m = S.mode;
+    targets = [];
+    if (m === 'micro') target = spawnMicro(now, r, 2, 6);
+    else if (m === 'flick') {
+      var rg = FLICK[S.flickRange] || FLICK.mid, sgn = Math.random() < 0.5 ? -1 : 1;
+      target = { yaw: wrap180(cam.yaw + sgn * rand(rg[0], rg[1])), pitch: rand(-8, 10), r: r, spawnAt: now };
+    } else if (m === 'head') {
+      headSide = -headSide;
+      target = { yaw: wrap180(cam.yaw + headSide * rand(12, 40)), pitch: 0, r: r, spawnAt: now };
+    } else if (m === 'react') spawnReact(now);
+    else if (m === 'track') target = trkNew();
+    else if (m === 'peek') target = peekNew(now);
+    else if (m === 'switch') { target = null; spawnSet(now); }
+  }
+  function ballHit(t) {
+    var p = project(t.yaw, t.pitch);
     if (p.z <= 0.05) return false;
-    var f = focal(), s = toScreen(p, f), r = f * Math.tan(target.r * D2R) / p.z;
+    var f = focal(), s = toScreen(p, f), r = f * Math.tan(t.r * D2R) / p.z;
     return Math.hypot(s.x - W / 2, s.y - H / 2) <= r;
   }
+  function angDist(t) { return Math.hypot(wrap180(t.yaw - cam.yaw), t.pitch - cam.pitch); }
   function recentMove(now) {
     var a = 0, b = 0;
     moves = moves.filter(function (m) { return now - m.t < 400; });
     moves.forEach(function (m) { if (now - m.t < 200) { a += m.a; b += m.b; } });
     return { a: a, b: b };
   }
+  function missClass(tx, ty, now) {
+    var m = recentMove(now), mag = Math.hypot(m.a, m.b);
+    var ex = wrap180(tx - cam.yaw), ey = ty - cam.pitch;
+    if (mag < 0.25) { run.side++; return; }
+    var ux = m.a / mag, uy = m.b / mag;
+    var par = ex * ux + ey * uy, perp = Math.abs(ex * uy - ey * ux);
+    if (perp > Math.abs(par)) run.side++;
+    else if (par > 0) run.under++;
+    else run.over++;
+  }
   function doFire() {
-    if (run.state !== 'running' || S.mode === 'track' || !target) return;
-    var now = performance.now();
-    run.shots++;
-    if (onTarget()) {
-      run.hits++; run.ttSum += now - target.spawnAt; hitAt = now; spawn(now);
-    } else {
-      var m = recentMove(now), mag = Math.hypot(m.a, m.b);
-      var ex = wrap180(target.yaw - cam.yaw), ey = target.pitch - cam.pitch;
-      if (mag < 0.25) { run.side++; return; }
-      var ux = m.a / mag, uy = m.b / mag;
-      var par = ex * ux + ey * uy, perp = Math.abs(ex * uy - ey * ux);
-      if (perp > Math.abs(par)) run.side++;
-      else if (par > 0) run.under++;
-      else run.over++;
+    if (run.state !== 'running' || S.mode === 'track') return;
+    var now = performance.now(), m = S.mode, i;
+    if (m === 'switch') {
+      if (!targets.length) return;
+      run.shots++;
+      var best = -1, bd = 1e9, nn = null, nd = 1e9;
+      for (i = 0; i < targets.length; i++) {
+        var dd = angDist(targets[i]);
+        if (dd < nd) { nd = dd; nn = targets[i]; }
+        if (ballHit(targets[i]) && dd < bd) { bd = dd; best = i; }
+      }
+      if (best >= 0) {
+        run.hits++; run.ttSum += now - run.lastEv; run.lastEv = now; hitAt = now; targets.splice(best, 1);
+        if (!targets.length) { run.sets++; spawnSet(now); }
+      } else missClass(nn.yaw, nn.pitch, now);
+      return;
     }
+    if (!target) return;
+    run.shots++;
+    if (m === 'react') {
+      if (!target.vis) { run.early++; return; }
+      if (ballHit(target)) { var rt = now - target.spawnAt; run.hits++; run.ttSum += rt; run.rtBest = Math.min(run.rtBest, rt); hitAt = now; spawn(now); }
+      else missClass(target.yaw, target.pitch, now);
+      return;
+    }
+    if (m === 'peek') {
+      if (target.ph === 'wait') { run.early++; return; }
+      var h = peekHit(target);
+      if (h) { run.hits++; if (h === 2) run.heads++; run.ttSum += now - target.spawnAt; hitAt = now; peekNext(target); }
+      else missClass(target.yaw, target.pitch, now);
+      return;
+    }
+    if (m === 'head') { run.vsum += Math.abs(cam.pitch); run.vn++; }
+    if (ballHit(target)) { run.hits++; run.ttSum += now - target.spawnAt; hitAt = now; spawn(now); }
+    else missClass(target.yaw, target.pitch, now);
   }
 
   /* ---------- сессия ---------- */
-  function newRun() { return { state: 'running', remaining: S.dur, hits: 0, shots: 0, over: 0, under: 0, side: 0, ttSum: 0, onT: 0, elapsed: 0 }; }
+  function newRun(dur) {
+    return { state: 'running', dur: dur, remaining: dur, hits: 0, shots: 0, over: 0, under: 0, side: 0, ttSum: 0, onT: 0, headT: 0, elapsed: 0,
+      peeks: 0, early: 0, heads: 0, sets: 0, vsum: 0, vn: 0, bandT: 0, preSum: 0, rtBest: Infinity, lastEv: performance.now() };
+  }
   function startSession() {
-    run = newRun(); moves = [];
+    var dur = testState ? 30 : S.dur;
+    if (testState) testState.idx = testState.res.length;
+    run = newRun(dur); moves = []; cam.yaw = HOME.yaw; cam.pitch = HOME.pitch;
     setFull(true);
     $('startOv').hidden = true; $('endOv').hidden = true;
     spawn(performance.now());
   }
+  function pc(a, b) { return b ? Math.round(a / b * 100) + '%' : '0%'; }
+  function resText(e) {
+    var m = e.mode;
+    if (m === 'track') return 'на цели ' + fmt(e.onPct * 100, 0) + '%, голова ' + (fin(e.headPct) ? fmt(e.headPct * 100, 0) : '0') + '%';
+    if (m === 'peek') return e.hits + '/' + e.peeks + ' пиков' + (fin(e.rt) ? ', реакция ' + fmt(e.rt, 0) + ' мс' : '') + ', ранних ' + e.early;
+    if (m === 'react') return (fin(e.rt) ? 'в среднем ' + fmt(e.rt, 0) + ' мс' : 'нет попаданий') + ', рано ' + e.early;
+    if (m === 'switch') return 'наборов ' + e.sets + ', ' + e.hits + '/' + e.shots + ' (' + pc(e.hits, e.shots) + ')';
+    if (m === 'head') return e.hits + '/' + e.shots + ' (' + pc(e.hits, e.shots) + ')' + (fin(e.vavg) ? ', по вертикали ±' + fmt(e.vavg, 1) + '°' : '');
+    return e.hits + '/' + e.shots + ' (' + pc(e.hits, e.shots) + '), перелёт ' + e.over + ', недолёт ' + e.under;
+  }
+  function buildEntry(r) {
+    var e = { ts: Date.now(), mode: S.mode, dur: r.dur, hits: r.hits, shots: r.shots, over: r.over, under: r.under, side: r.side,
+      onPct: r.elapsed ? r.onT / r.elapsed : 0, headPct: r.elapsed ? r.headT / r.elapsed : 0,
+      peeks: r.peeks, early: r.early, heads: r.heads, sets: r.sets,
+      vavg: r.vn ? r.vsum / r.vn : null, band: r.elapsed ? r.bandT / r.elapsed : 0,
+      rt: r.hits ? r.ttSum / r.hits : null, rtBest: isFinite(r.rtBest) ? r.rtBest : null,
+      pre: r.peeks ? r.preSum / r.peeks : null, cm: effCm(), size: S.size };
+    e.res = resText(e);
+    return e;
+  }
   function endSession(silent) {
     if (run.state !== 'running') return;
     run.state = 'done';
-    var r = run, acc = r.shots ? r.hits / r.shots : 0, onPct = r.elapsed ? r.onT / r.elapsed : 0;
-    var entry = { ts: Date.now(), mode: S.mode, dur: S.dur, hits: r.hits, shots: r.shots, over: r.over, under: r.under, side: r.side, onPct: onPct, cm: S.cm360, size: S.size };
+    var r = run, entry = buildEntry(r);
     if (!silent) {
       hist.unshift(entry); hist = hist.slice(0, 10); saveHist(); renderHist();
-      showEnd(entry);
-    } else { $('startOv').hidden = false; setFull(false); }
-    target = null;
+      if (testState) { testState.res.push({ cm: entry.cm, hits: r.hits, shots: r.shots, over: r.over, under: r.under }); showTestEnd(); }
+      else showEnd(entry);
+    } else { testState = null; $('startOv').hidden = false; setFull(false); }
+    target = null; targets = [];
   }
   function tipFor(e) {
-    if (e.mode === 'track') {
-      if (e.onPct < 0.4) return 'На цели меньше 40% времени. Веди прицел без остановок и не отрывай палец. Сенсу пока не меняй.';
-      if (e.onPct < 0.65) return 'Неплохо. Следи, чтобы палец не прилипал на стыке: двигай подушечкой, без нажима.';
-      return 'Трекинг уверенный. Усложни: размер цели «Маленькая».';
+    var m = e.mode, miss = e.shots - e.hits;
+    if (m === 'track') {
+      if (e.onPct < 0.35) return 'На персонаже меньше 35% времени. Не гонись за каждым рывком: держи прицел на теле и подстраивайся под остановки. Палец не отрывай.';
+      if (e.onPct < 0.6) return 'Неплохо. Следующая цель: после резкой остановки не проскакивать. Дотягивай плавно, нажим минимальный.';
+      if (e.headPct < 0.25) return 'Тело держишь уверенно. Поднимай прицел к голове плавным свайпом чуть вверх, без рывка.';
+      return 'Уверенный трекинг. Усложни: размер цели «Маленькая» (дальний персонаж).';
+    }
+    if (m === 'react') {
+      if (e.shots < 3) return 'Слишком мало попыток для выводов.';
+      if (e.early >= 3) return 'Много ранних выстрелов: ты стреляешь по ожиданию. Жди цель, а не угадывай момент.';
+      if (fin(e.rt) && e.rt > 550) return 'Реакция медленнее 550 мс (ориентир для этого режима). Держи палец над кнопкой огня и смотри на область вокруг прицела, а не в одну точку.';
+      return 'Реакция хорошая. Следи, чтобы промахов по направлению было мало: в таком режиме важны и скорость, и доводка.';
+    }
+    if (m === 'peek') {
+      if (e.peeks < 4) return 'Слишком мало пиков для выводов. Сыграй дольше.';
+      if (e.early >= 3) return 'Много ранних выстрелов: противник ещё не вышел. Стреляй, когда он появился.';
+      if (fin(e.pre) && e.pre > 8) return 'В момент появления прицел в среднем в ' + fmt(e.pre, 1) + '° от идеальной точки. Держи его чуть за краем угла на уровне головы (колечко на сцене).';
+      if (e.hits / e.peeks < 0.5) return 'Успеваешь меньше половины пиков. Прицел стоит правильно, значит работай над скоростью: короткий точный свайп без дожатия.';
+      return 'Хорошо держишь угол. Дальше: размер цели «Маленькая» (дальний противник).';
+    }
+    if (m === 'head') {
+      if (e.shots < 6) return 'Слишком мало выстрелов для выводов.';
+      if (fin(e.vavg) && e.vavg > 2) return 'По вертикали ты уезжаешь в среднем на ' + fmt(e.vavg, 1) + '°. Свайпай строго вбок и не подтягивай палец вверх-вниз. Если сдвиг всегда в одну сторону, поменяй угол хвата.';
+      return 'Уровень головы держишь. Усложни: размер цели «Маленькая».';
+    }
+    if (m === 'switch') {
+      if (e.shots < 6) return 'Слишком мало выстрелов для выводов.';
+      if (e.over >= e.under * 1.5 && e.over >= 3) return 'Чаще перелёты при переходе на следующую цель. Тормози свайп раньше, не дожимай.';
+      if (e.under >= e.over * 1.5 && e.under >= 3) return 'Чаще недолёты: не хватает хода при переходе между целями. Делай более смелый первый свайп.';
+      return 'Промахи вперемешку. Выбирай ближайшую цель первой и не меняй решение посреди свайпа.';
     }
     if (e.shots < 6) return 'Слишком мало выстрелов для выводов. Играй активнее.';
-    var miss = e.shots - e.hits;
     if (miss < 3) return 'Почти без промахов. Уменьши цель или переходи на «Флик».';
     if (e.over >= e.under * 1.5 && e.over >= 3) return 'Перелётов больше: ты проскакиваешь цель. Давай меньше нажима и короче свайп, сенсу не трогай.';
-    if (e.under >= e.over * 1.5 && e.under >= 3) return 'Недолётов больше: не хватает хода пальца. Если так остаётся несколько сессий подряд, подними сенсу на 3–5 пунктов в игре и повтори замер.';
+    if (e.under >= e.over * 1.5 && e.under >= 3) return m === 'flick'
+      ? 'Недолётов больше: не хватает хода. Если цели дальше одного свайпа, поставь «Дальность фликов: Средне» или «Близко». Если так остаётся несколько сессий подряд, проверь сенсу на вкладке «Подбор сенсы».'
+      : 'Недолётов больше: не хватает хода пальца. Если так остаётся несколько сессий подряд, проверь сенсу на вкладке «Подбор сенсы».';
     return 'Промахи вперемешку: перелёт, недолёт и в сторону. Главное сейчас стабильность хвата, сенсу не меняй.';
   }
-  function showEnd(e) {
+  function fillStats(list) {
     var s = $('endStats'); s.innerHTML = '';
-    function st(b, l) { var d = document.createElement('div'); d.className = 'stat'; var x = document.createElement('b'); x.textContent = b; var y = document.createElement('span'); y.textContent = l; d.appendChild(x); d.appendChild(y); s.appendChild(d); }
-    if (e.mode === 'track') { st(fmt(e.onPct * 100, 0) + '%', 'на цели'); st(String(e.dur), 'секунд'); st(fmt(e.cm, 1), 'см / 360°'); }
-    else {
-      st(e.hits + ' / ' + e.shots, 'попадания'); st(fmt(e.shots ? e.hits / e.shots * 100 : 0, 0) + '%', 'точность'); st(e.hits ? fmt(run.ttSum / e.hits / 1000, 2) + ' с' : '—', 'до цели');
-      st(String(e.over), 'перелёт'); st(String(e.under), 'недолёт'); st(String(e.side), 'мимо');
-    }
-    $('endTitle').textContent = MODES[e.mode].name + ', ' + e.dur + ' с';
+    list.forEach(function (it) {
+      var d = document.createElement('div'); d.className = 'stat';
+      var x = document.createElement('b'); x.textContent = it[0]; var y = document.createElement('span'); y.textContent = it[1];
+      d.appendChild(x); d.appendChild(y); s.appendChild(d);
+    });
+  }
+  function showEnd(e) {
+    var m = e.mode, acc = fmt(e.shots ? e.hits / e.shots * 100 : 0, 0) + '%', tt = fin(e.rt) ? fmt(e.rt / 1000, 2) + ' с' : '—', list;
+    if (m === 'track') list = [[fmt(e.onPct * 100, 0) + '%', 'на цели'], [fmt(e.headPct * 100, 0) + '%', 'на голове'], [fmt(e.cm, 1), 'см / 360°']];
+    else if (m === 'peek') list = [[e.hits + ' / ' + e.peeks, 'пиков убито'], [fin(e.rt) ? fmt(e.rt, 0) + ' мс' : '—', 'реакция'], [fin(e.pre) ? fmt(e.pre, 1) + '°' : '—', 'ошибка прицела'], [String(e.early), 'ранних'], [String(e.heads), 'в голову'], [fmt(e.cm, 1), 'см / 360°']];
+    else if (m === 'react') list = [[fin(e.rt) ? fmt(e.rt, 0) + ' мс' : '—', 'в среднем'], [fin(e.rtBest) ? fmt(e.rtBest, 0) + ' мс' : '—', 'лучшая'], [String(e.early), 'ранних'], [e.hits + ' / ' + e.shots, 'попадания'], [String(e.over + e.under + e.side), 'промахов'], [fmt(e.cm, 1), 'см / 360°']];
+    else if (m === 'switch') list = [[String(e.sets), 'наборов'], [e.hits + ' / ' + e.shots, 'попадания'], [acc, 'точность'], [tt, 'на цель'], [String(e.over), 'перелёт'], [String(e.under), 'недолёт']];
+    else if (m === 'head') list = [[e.hits + ' / ' + e.shots, 'попадания'], [acc, 'точность'], [fin(e.vavg) ? '±' + fmt(e.vavg, 1) + '°' : '—', 'по вертикали'], [fmt(e.band * 100, 0) + '%', 'на линии головы'], [String(e.over), 'перелёт'], [String(e.under), 'недолёт']];
+    else list = [[e.hits + ' / ' + e.shots, 'попадания'], [acc, 'точность'], [tt, 'до цели'], [String(e.over), 'перелёт'], [String(e.under), 'недолёт'], [String(e.side), 'мимо']];
+    fillStats(list);
+    $('endTitle').textContent = MODES[m].name + ', ' + e.dur + ' с';
     $('endTip').textContent = tipFor(e);
+    $('againBtn').hidden = false; $('againBtn').textContent = 'Ещё раз'; $('applyTestBtn').hidden = true;
+    $('endOv').hidden = false;
+  }
+  function showTestEnd() {
+    var res = testState.res, list = res.map(function (r) { return [fmt(r.cm, 1) + ' см', r.hits + '/' + r.shots + ' · ' + pc(r.hits, r.shots) + ' · перелёт ' + r.over + ' · недолёт ' + r.under]; });
+    fillStats(list);
+    $('endTitle').textContent = 'Тест сенсы ' + res.length + ' из 3';
+    var again = $('againBtn'), ap = $('applyTestBtn');
+    ap.hidden = true; testState.rec = null;
+    if (res.length < 3) {
+      $('endTip').textContent = 'Следующий замер пойдёт с другим расстоянием на оборот. Не подстраивайся специально, просто играй.';
+      again.hidden = false; again.textContent = 'Дальше (' + (res.length + 1) + ' из 3)';
+    } else {
+      again.hidden = true;
+      var acc = res.map(function (r) { return r.shots ? r.hits / r.shots : 0; });
+      var order = res.map(function (r, i) { return i; }).sort(function (a, b) { return acc[b] - acc[a]; });
+      var best = res[order[0]], gap = acc[order[0]] - acc[order[1]], tip;
+      if (!res.every(function (r) { return r.shots >= 8; })) {
+        tip = 'В какой-то сессии меньше 8 выстрелов, по такому результату выводов нет. Повтори тест и стреляй активнее.';
+      } else if (gap < 0.08) {
+        tip = 'Разница в точности меньше 8 п. п., это в пределах шума. Оставь свою сенсу (' + fmt(testState.center, 1) + ' см) или повтори тест ещё раз.';
+        testState.rec = testState.center;
+      } else {
+        testState.rec = best.cm;
+        tip = 'Лучшая точность на ' + fmt(best.cm, 1) + ' см (' + pc(best.hits, best.shots) + ').';
+        if (best.over >= best.under * 1.5 && best.over >= 3) tip += ' Но перелётов всё ещё больше: проверь вариант примерно на 10% медленнее.';
+        else if (best.under >= best.over * 1.5 && best.under >= 3) tip += ' Но недолётов больше: проверь вариант примерно на 10% быстрее.';
+        tip += ' Одна серия шумная, повтори тест 2–3 раза.';
+      }
+      $('endTip').textContent = tip;
+      if (testState.rec) { ap.hidden = false; ap.textContent = 'Поставить ' + fmt(testState.rec, 1) + ' см в тренажёре'; }
+    }
     $('endOv').hidden = false;
   }
   function renderHist() {
@@ -610,35 +965,127 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
     if (!hist.length) { var d = document.createElement('div'); d.textContent = 'Пока пусто. Результаты появятся после первой сессии.'; h.appendChild(d); return; }
     hist.forEach(function (e) {
       var d = document.createElement('div');
-      var dt = new Date(e.ts);
+      var dt = new Date(e.ts), mn = MODES[e.mode] ? MODES[e.mode].name : e.mode;
       var when = dt.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + dt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-      var res = e.mode === 'track' ? ('на цели ' + fmt(e.onPct * 100, 0) + '%') : (e.hits + '/' + e.shots + ' (' + fmt(e.shots ? e.hits / e.shots * 100 : 0, 0) + '%), перелёт ' + e.over + ', недолёт ' + e.under);
-      [when, MODES[e.mode].name + ' ' + e.dur + ' с', res, fmt(e.cm, 1) + ' см/360'].forEach(function (t) { var s = document.createElement('span'); s.textContent = t; d.appendChild(s); });
+      [when, mn + ' ' + e.dur + ' с', e.res || resText(e), fmt(e.cm, 1) + ' см/360'].forEach(function (t) { var s = document.createElement('span'); s.textContent = t; d.appendChild(s); });
       h.appendChild(d);
     });
   }
   $('clearHist').onclick = function () { hist = []; saveHist(); renderHist(); };
   $('startBtn').onclick = startSession;
   $('againBtn').onclick = startSession;
-  $('closeBtn').onclick = function () { $('endOv').hidden = true; $('startOv').hidden = false; setFull(false); };
+  $('closeBtn').onclick = function () { testState = null; $('endOv').hidden = true; $('startOv').hidden = false; setFull(false); };
+  $('applyTestBtn').onclick = function () {
+    if (!testState || !testState.rec) return;
+    S.cm360 = clamp(testState.rec, 5, 120); S.measured = true; save(); showers.forEach(function (s) { s(); }); refreshSettings();
+    $('applyTestBtn').hidden = true; $('endTip').textContent = 'В тренажёре теперь ' + fmt(S.cm360, 1) + ' см на оборот. Чтобы поставить такую же сенсу в игре, открой «Подбор сенсы», блок «Перенос в игру».';
+  };
 
   /* ---------- цикл ---------- */
   var lastT = performance.now();
   function update(dt, now) {
     if (run.state !== 'running') return;
     run.remaining -= dt; run.elapsed += dt;
-    if (S.mode === 'track' && target) {
-      target.t += dt; target.yaw = wrap180(target.yaw + target.vel * dt);
-      target.flipIn -= dt;
-      if (target.flipIn <= 0) { target.vel = (Math.random() < 0.5 ? -1 : 1) * rand(10, 26); target.flipIn = rand(0.5, 1.6); }
-      var off = wrap180(target.yaw - target.base);
-      if (Math.abs(off) > 35) target.vel = -Math.sign(off) * Math.abs(target.vel);
-      target.pitch = target.pb + 6 * Math.sin(target.t * 0.9);
-      if (onTarget()) run.onT += dt;
+    var m = S.mode;
+    if (m === 'track' && target) {
+      trkStep(target, dt);
+      var c = charScreen(target.yaw, target.pitch, target.d);
+      if (c) { var h = charHit(target, c); if (h) { run.onT += dt; if (h === 2) run.headT += dt; } }
+    } else if (m === 'peek' && target) peekStep(target, dt, now);
+    else if (m === 'react' && target && !target.vis && now >= target.showAt) {
+      var o = spawnMicro(now, target.r, 1.5, 4); target.yaw = o.yaw; target.pitch = o.pitch; target.vis = true; target.spawnAt = now;
     }
+    if (m === 'head' && Math.abs(cam.pitch) <= 1) run.bandT += dt;
     if (run.remaining <= 0) { run.remaining = 0; endSession(false); }
   }
   function line(x1, y1, x2, y2) { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
+  function rr(x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r); ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r); ctx.closePath();
+  }
+  function arrowTo(p) {
+    if (S.mode === 'micro' || S.mode === 'react') return;
+    var ang = Math.atan2(-p.y, p.x), R = Math.min(W, H) * 0.36;
+    var ax = W / 2 + Math.cos(ang) * R, ay = H / 2 + Math.sin(ang) * R;
+    ctx.fillStyle = tokens['--cv-target']; ctx.beginPath();
+    ctx.moveTo(ax + Math.cos(ang) * 14, ay + Math.sin(ang) * 14);
+    ctx.lineTo(ax + Math.cos(ang + 2.5) * 12, ay + Math.sin(ang + 2.5) * 12);
+    ctx.lineTo(ax + Math.cos(ang - 2.5) * 12, ay + Math.sin(ang - 2.5) * 12);
+    ctx.closePath(); ctx.fill();
+  }
+  function drawChar(c, t) {
+    var s = c.s, x = c.x, y = c.y, cr = t.cr || 0;
+    var body = tokens['--cv-target'], headc = tokens['--cv-target-ring'], edge = tokens['--cv-cross-edge'];
+    var swing = (t.v && Math.abs(t.v) > 0.5) ? Math.sin(t.phase || 0) * 0.1 : 0;
+    var legBot = CH.legBot - cr, legH = (legBot - CH.torsoBot) * s;
+    ctx.save();
+    ctx.globalAlpha = 0.25; ctx.fillStyle = edge; ctx.beginPath(); ctx.ellipse(x, y + legBot * s, 0.45 * s, 0.1 * s, 0, 0, 6.2832); ctx.fill();
+    ctx.globalAlpha = 1; ctx.fillStyle = body;
+    rr(x + (-0.19 + swing) * s, y + CH.torsoBot * s, 0.17 * s, legH, 0.04 * s); ctx.fill();
+    rr(x + (0.02 - swing) * s, y + CH.torsoBot * s, 0.17 * s, legH, 0.04 * s); ctx.fill();
+    rr(x - CH.torsoHW * s, y + CH.torsoTop * s, CH.torsoHW * 2 * s, (CH.torsoBot - CH.torsoTop) * s, 0.08 * s); ctx.fill();
+    ctx.fillStyle = headc; ctx.beginPath(); ctx.arc(x, y, CH.headR * s, 0, 6.2832); ctx.fill();
+    ctx.strokeStyle = body; ctx.lineWidth = Math.max(1.2, s * 0.03); ctx.stroke();
+    ctx.restore();
+  }
+  function drawWall(t, f) {
+    var pts = [], k, y, p, steps = 8;
+    for (k = 0; k <= steps; k++) { y = t.cy - t.open * WALL_DEG * k / steps; p = project(y, 16); if (p.z <= 0.05) return; pts.push(toScreen(p, f)); }
+    for (k = steps; k >= 0; k--) { y = t.cy - t.open * WALL_DEG * k / steps; p = project(y, -16); if (p.z <= 0.05) return; pts.push(toScreen(p, f)); }
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+    for (k = 1; k < pts.length; k++) ctx.lineTo(pts[k].x, pts[k].y);
+    ctx.closePath(); ctx.fillStyle = tokens['--surface2']; ctx.fill();
+    ctx.strokeStyle = tokens['--line']; ctx.lineWidth = 1; ctx.stroke();
+    var a = project(t.cy, 16), b = project(t.cy, -16);
+    if (a.z > 0.05 && b.z > 0.05) { var sa = toScreen(a, f), sb = toScreen(b, f); ctx.strokeStyle = tokens['--accent']; ctx.lineWidth = 2; line(sa.x, sa.y, sb.x, sb.y); }
+  }
+  function drawPeekWorld(t, f, p) {
+    if (p.z > 0.05 && t.ph !== 'wait') {
+      var s = toScreen(p, f); drawChar({ x: s.x, y: s.y, s: f / (t.d * p.z) }, t);
+    }
+    drawWall(t, f);
+    var pc0 = project(t.cy, 0);
+    if (pc0.z <= 0.05) { arrowTo(pc0); return; }
+    var sc = toScreen(pc0, f);
+    if (sc.x < -20 || sc.x > W + 20 || sc.y < -20 || sc.y > H + 20) { arrowTo(pc0); return; }
+    if (t.ph === 'wait') {
+      var iy = wrap180(t.cy + t.open * Math.atan(0.3 / t.d) / D2R), pi = project(iy, 0);
+      if (pi.z > 0.05) { var si = toScreen(pi, f); ctx.globalAlpha = 0.6; ctx.strokeStyle = tokens['--accent']; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(si.x, si.y, 7, 0, 6.2832); ctx.stroke(); ctx.globalAlpha = 1; }
+    }
+  }
+  function drawTargets(f) {
+    var list = targets.length ? targets : (target ? [target] : []);
+    list.forEach(function (t) {
+      if (t.vis === false) return;
+      var p = project(t.yaw, t.pitch);
+      if (t.kind === 'peek') { drawPeekWorld(t, f, p); return; }
+      if (p.z <= 0.05) { arrowTo(p); return; }
+      var s = toScreen(p, f);
+      if (t.kind === 'char') {
+        if (s.x < -80 || s.x > W + 80 || s.y < -80 || s.y > H + 80) arrowTo(p);
+        else drawChar({ x: s.x, y: s.y, s: f / (t.d * p.z) }, t);
+        return;
+      }
+      var r = Math.max(3, f * Math.tan(t.r * D2R) / p.z);
+      if (s.x > -r && s.x < W + r && s.y > -r && s.y < H + r) {
+        ctx.fillStyle = tokens['--cv-target']; ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, 6.2832); ctx.fill();
+        ctx.strokeStyle = tokens['--cv-target-ring']; ctx.lineWidth = Math.max(1.5, r * 0.18); ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, 6.2832); ctx.stroke();
+      } else arrowTo(p);
+    });
+  }
+  function hudLines() {
+    var r = run, pct = r.shots ? Math.round(r.hits / r.shots * 100) : 0;
+    switch (S.mode) {
+      case 'track': return ['на цели ' + (r.elapsed ? Math.round(r.onT / r.elapsed * 100) : 0) + '% · голова ' + (r.elapsed ? Math.round(r.headT / r.elapsed * 100) : 0) + '%'];
+      case 'peek': return [r.hits + ' из ' + r.peeks + ' пиков', 'ранних ' + r.early + (r.peeks ? ' · ошибка ' + fmt(r.preSum / r.peeks, 1) + '°' : '')];
+      case 'react': return [r.hits + ' из ' + r.shots, 'среднее ' + (r.hits ? fmt(r.ttSum / r.hits, 0) + ' мс' : '—') + ' · рано ' + r.early];
+      case 'switch': return ['наборов ' + r.sets, r.hits + ' из ' + r.shots + ' · ' + pct + '%'];
+      case 'head': return [r.hits + ' из ' + r.shots + ' · ' + pct + '%', 'вертикаль ±' + (r.vn ? fmt(r.vsum / r.vn, 1) : '0,0') + '°'];
+      default: return [r.hits + ' из ' + r.shots + ' · ' + pct + '%', 'перелёт ' + r.over + ' · недолёт ' + r.under + ' · мимо ' + r.side];
+    }
+  }
 
   function draw(now) {
     var f = focal();
@@ -646,48 +1093,32 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
     var hy = H / 2 + f * Math.tan(cam.pitch * D2R);
     if (hy < H) { ctx.fillStyle = tokens['--cv-ground']; ctx.fillRect(0, Math.max(0, hy), W, H - Math.max(0, hy)); }
     ctx.strokeStyle = tokens['--cv-grid']; ctx.lineWidth = 1; ctx.globalAlpha = 0.9;
-    var k, a, pa, pb, sa, sb;
+    var k, pa, pb, sa, sb;
     for (k = -180; k < 180; k += 15) {
       pa = project(k, -25); pb = project(k, 25);
       if (pa.z > 0.05 && pb.z > 0.05) { sa = toScreen(pa, f); sb = toScreen(pb, f); line(sa.x, sa.y, sb.x, sb.y); }
     }
-    [-20, -10, 0, 10, 20].forEach(function (pitchRow) {
+    function pitchRow(pitchV) {
       ctx.beginPath(); var pen = false;
       for (var y = cam.yaw - 110; y <= cam.yaw + 110; y += 5) {
-        var p = project(y, pitchRow);
+        var p = project(y, pitchV);
         if (p.z <= 0.05) { pen = false; continue; }
         var s = toScreen(p, f);
         if (!pen) { ctx.moveTo(s.x, s.y); pen = true; } else ctx.lineTo(s.x, s.y);
       }
       ctx.stroke();
-    });
+    }
+    [-20, -10, 0, 10, 20].forEach(pitchRow);
     ctx.globalAlpha = 1;
+    if (S.mode === 'head') {
+      ctx.strokeStyle = tokens['--accent']; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.9; pitchRow(1); pitchRow(-1); ctx.globalAlpha = 1;
+    }
     ctx.fillStyle = tokens['--cv-label']; ctx.font = '500 11px ' + tokens['--font-num']; ctx.textAlign = 'center';
     for (k = -180; k < 180; k += 45) {
       var pl = project(k, 0);
       if (pl.z > 0.05) { var sl = toScreen(pl, f); ctx.fillText(((k + 360) % 360) + '°', sl.x, sl.y - 6); }
     }
-    /* цель */
-    if (target) {
-      var p = project(target.yaw, target.pitch);
-      if (p.z > 0.05) {
-        var s = toScreen(p, f), r = Math.max(3, f * Math.tan(target.r * D2R) / p.z);
-        if (s.x > -r && s.x < W + r && s.y > -r && s.y < H + r) {
-          ctx.fillStyle = tokens['--cv-target']; ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, 6.2832); ctx.fill();
-          ctx.strokeStyle = tokens['--cv-target-ring']; ctx.lineWidth = Math.max(1.5, r * 0.18); ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, 6.2832); ctx.stroke();
-        } else arrow(p);
-      } else arrow(p);
-    }
-    function arrow(p) {
-      if (S.mode === 'micro') return;
-      var ang = Math.atan2(-p.y, p.x), R = Math.min(W, H) * 0.36;
-      var ax = W / 2 + Math.cos(ang) * R, ay = H / 2 + Math.sin(ang) * R;
-      ctx.fillStyle = tokens['--cv-target']; ctx.beginPath();
-      ctx.moveTo(ax + Math.cos(ang) * 14, ay + Math.sin(ang) * 14);
-      ctx.lineTo(ax + Math.cos(ang + 2.5) * 12, ay + Math.sin(ang + 2.5) * 12);
-      ctx.lineTo(ax + Math.cos(ang - 2.5) * 12, ay + Math.sin(ang - 2.5) * 12);
-      ctx.closePath(); ctx.fill();
-    }
+    drawTargets(f);
     /* прицел */
     var cx = W / 2, cy = H / 2;
     function cross(col, w) { ctx.strokeStyle = col; ctx.lineWidth = w; line(cx - 13, cy, cx - 4, cy); line(cx + 4, cy, cx + 13, cy); line(cx, cy - 13, cx, cy - 4); line(cx, cy + 4, cx, cy + 13); }
@@ -699,20 +1130,17 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
       ctx.textAlign = 'left'; ctx.fillStyle = tokens['--fg']; ctx.font = '700 30px ' + tokens['--font-num'];
       ctx.fillText(String(Math.floor(rem / 60)).padStart(1, '0') + ':' + String(rem % 60).padStart(2, '0'), 14 + INS.l, 38 + INS.t);
       ctx.font = '600 15px ' + tokens['--font-num']; ctx.fillStyle = tokens['--muted'];
-      if (S.mode === 'track') ctx.fillText('на цели ' + (run.elapsed ? Math.round(run.onT / run.elapsed * 100) : 0) + '%', 14 + INS.l, 58 + INS.t);
-      else {
-        ctx.fillText(run.hits + ' из ' + run.shots + ' · ' + (run.shots ? Math.round(run.hits / run.shots * 100) : 0) + '%', 14 + INS.l, 58 + INS.t);
-        ctx.fillText('перелёт ' + run.over + ' · недолёт ' + run.under + ' · мимо ' + run.side, 14 + INS.l, 78 + INS.t);
-      }
-      if (S.ads) { ctx.fillStyle = tokens['--accent']; ctx.fillText('ADS ×' + fmt(S.adsMult, 2), 14 + INS.l, H - 14 - INS.b); }
-      if (editFire || (S.mode !== 'track' && run.state === 'running')) {
-        var fb = fireBtn(), pressed = now - fireAt < 120;
-        ctx.globalAlpha = pressed ? 1 : 0.85; ctx.fillStyle = pressed ? tokens['--cv-target'] : tokens['--surface'];
-        ctx.beginPath(); ctx.arc(fb.x, fb.y, fb.r, 0, 6.2832); ctx.fill();
-        ctx.globalAlpha = 1; ctx.strokeStyle = tokens['--cv-target']; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(fb.x, fb.y, fb.r, 0, 6.2832); ctx.stroke();
-        ctx.fillStyle = tokens['--fg']; ctx.textAlign = 'center'; ctx.font = '700 15px ' + tokens['--font-num']; ctx.fillText('ОГОНЬ', fb.x, fb.y + 5);
-        if (editFire) { ctx.font = '600 14px ' + tokens['--font-num']; ctx.fillStyle = tokens['--muted']; ctx.fillText('Так будет выглядеть кнопка во время тренировки', W / 2, H - 16 - INS.b); }
-      }
+      hudLines().forEach(function (t, i) { ctx.fillText(t, 14 + INS.l, 58 + INS.t + i * 20); });
+      if (testState) { ctx.fillStyle = tokens['--accent']; ctx.fillText('Тест сенсы ' + (testState.idx + 1) + ' из 3 · ' + fmt(effCm(), 1) + ' см', 14 + INS.l, H - 14 - INS.b); }
+      else if (S.ads) { ctx.fillStyle = tokens['--accent']; ctx.fillText('ADS ×' + fmt(S.adsMult, 2), 14 + INS.l, H - 14 - INS.b); }
+    }
+    if (editFire || (S.mode !== 'track' && run.state === 'running')) {
+      var fb = fireBtn(), pressed = now - fireAt < 120;
+      ctx.globalAlpha = pressed ? 1 : 0.85; ctx.fillStyle = pressed ? tokens['--cv-target'] : tokens['--surface'];
+      ctx.beginPath(); ctx.arc(fb.x, fb.y, fb.r, 0, 6.2832); ctx.fill();
+      ctx.globalAlpha = 1; ctx.strokeStyle = tokens['--cv-target']; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(fb.x, fb.y, fb.r, 0, 6.2832); ctx.stroke();
+      ctx.fillStyle = tokens['--fg']; ctx.textAlign = 'center'; ctx.font = '700 15px ' + tokens['--font-num']; ctx.fillText('ОГОНЬ', fb.x, fb.y + 5);
+      if (editFire) { ctx.font = '600 14px ' + tokens['--font-num']; ctx.fillStyle = tokens['--muted']; ctx.fillText('Так будет выглядеть кнопка во время тренировки', W / 2, H - 16 - INS.b); }
     }
   }
   function frame(now) {
@@ -722,8 +1150,10 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
   requestAnimationFrame(frame);
 
   /* ---------- режимы, время, полный экран ---------- */
-  function setMode(m) {
-    S.mode = m; save(); run = { state: 'idle' }; target = null;
+  function setMode(m, keep) {
+    if (!MODES[m]) m = 'micro';
+    if (!keep) testState = null;
+    S.mode = m; save(); run = { state: 'idle' }; target = null; targets = [];
     document.querySelectorAll('#modeRow .chip').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.mode === m); });
     $('ovTitle').textContent = MODES[m].name; $('ovDesc').textContent = MODES[m].desc; $('ovCtl').textContent = MODES[m].ctl;
     $('startOv').hidden = false; $('endOv').hidden = true;
@@ -734,10 +1164,11 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
     document.querySelectorAll('#durRow .chip').forEach(function (b) { b.setAttribute('aria-pressed', Number(b.dataset.dur) === d); });
   }
   document.querySelectorAll('#durRow .chip').forEach(function (b) { b.onclick = function () { setDur(Number(b.dataset.dur)); }; });
-  var apiFull = false;
+  var apiFull = false, fsAt = 0;
   function setFull(on) {
     var st = $('stage');
     if (st.classList.contains('full') === on) return;
+    fsAt = Date.now();
     st.classList.toggle('full', on); $('fsBtn').textContent = on ? 'Выйти' : 'На весь экран';
     try { document.body.style.overflow = on ? 'hidden' : ''; } catch (e) {}
     try {
@@ -747,7 +1178,7 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
     setTimeout(resize, 30); setTimeout(resize, 200);
   }
   document.addEventListener('fullscreenchange', function () {
-    if (!document.fullscreenElement && apiFull) { apiFull = false; if (editFire) endEdit(); else { if (run.state === 'running') endSession(true); setFull(false); } }
+    if (!document.fullscreenElement && apiFull && Date.now() - fsAt > 800) { apiFull = false; if (editFire) endEdit(); else { if (run.state === 'running') endSession(true); setFull(false); } }
   });
   $('fsBtn').onclick = function () {
     var st = $('stage');
@@ -778,12 +1209,20 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
   showers.push(link('yNum', 'yRange', 'yRatio', 0.5, 1.5, 2));
   showers.push(link('adsNum', 'adsRange', 'adsMult', 0.3, 1.5, 2));
   showers.push(link('fovNum', 'fovRange', 'fov', 60, 120, 0));
+  showers.push(link('csNum', 'csRange', 'charScale', 0.6, 1.6, 2));
+  showers.push(link('spNum', 'spRange', 'charSpeed', 0.6, 1.6, 2));
   $('adsOn').checked = S.ads; $('adsOn').onchange = function () { S.ads = $('adsOn').checked; save(); };
   $('invY').checked = S.invertY; $('invY').onchange = function () { S.invertY = $('invY').checked; save(); };
   $('sizeSel').value = S.size; $('sizeSel').onchange = function () { S.size = $('sizeSel').value; save(); };
+  $('flickSel').value = S.flickRange; $('flickSel').onchange = function () { S.flickRange = $('flickSel').value; save(); refreshSettings(); };
+  $('bnGo').onclick = function () { showTab('calib'); };
+  $('bnIphone').onclick = function () { S.pxPerCm = IPHONE_PX; S.screenCal = true; save(); refreshSettings(); };
   function refreshSettings() {
     $('degPerCm').textContent = 'Это ' + fmt(360 / S.cm360, 1) + '° камеры на каждый сантиметр свайпа.';
     $('unmeasured').hidden = !!S.measured;
+    $('calBanner').hidden = !!S.screenCal;
+    var rg = FLICK[S.flickRange] || FLICK.mid;
+    $('flickInfo').textContent = 'Самый дальний флик (' + rg[1] + '°) = ' + fmt(rg[1] * S.cm360 / 360, 1) + ' см свайпа при твоей сенсе.';
   }
 
   /* ---------- калибровка ---------- */
@@ -844,12 +1283,40 @@ input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
   };
   $('cardRange').value = Math.round(5.398 * S.pxPerCm);
   $('cardRange').oninput = function () { $('cardBar').style.width = $('cardRange').value + 'px'; };
-  $('cardApply').onclick = function () { S.pxPerCm = Number($('cardRange').value) / 5.398; save(); refreshCalib(); refreshSettings(); };
-  $('cardReset').onclick = function () { S.pxPerCm = IPHONE_PX; save(); $('cardRange').value = Math.round(5.398 * S.pxPerCm); refreshCalib(); refreshSettings(); };
+  $('cardApply').onclick = function () { S.pxPerCm = Number($('cardRange').value) / 5.398; S.screenCal = true; save(); refreshCalib(); refreshSettings(); };
+  $('cardReset').onclick = function () { S.pxPerCm = IPHONE_PX; S.screenCal = true; save(); $('cardRange').value = Math.round(5.398 * S.pxPerCm); refreshCalib(); refreshSettings(); };
 
-  refreshSettings(); setMode(S.mode); setDur(S.dur); renderHist(); refreshCalib();
+  /* ---------- подбор сенсы ---------- */
+  ['swLen', 'swAng', 'gsNow', 'gsCmWant'].forEach(function (k) {
+    var el = $(k); el.value = S.sens[k];
+    el.oninput = function () { S.sens[k] = el.value; save(); refreshSens(); };
+  });
+  $('gsCmNow').oninput = function () { refreshSens(); };
+  var swCm = NaN;
+  function refreshSens() {
+    var sw = num($('swLen').value), ang = num($('swAng').value);
+    swCm = sw > 0 && ang > 0 ? sw * 360 / ang : NaN;
+    $('swOut').textContent = fin(swCm) ? 'Ориентир: около ' + fmt(swCm, 0) + ' см на оборот (' + fmt(360 / swCm, 1) + '° на сантиметр).' : 'Впиши оба числа.';
+    $('swApply').disabled = !fin(swCm);
+    var cur = num($('gsNow').value), cn = num($('gsCmNow').value), cw = num($('gsCmWant').value);
+    var ns = cur > 0 && cn > 0 && cw > 0 ? cur * cn / cw : NaN;
+    $('gsOut').textContent = fin(ns) ? 'Новая сенса в игре: ' + fmt(ns, 1) + '. После смены замерь заново и сверь число.' : 'Заполни три поля.';
+  }
+  $('swApply').onclick = function () {
+    if (!fin(swCm)) return;
+    S.cm360 = clamp(swCm, 5, 120); S.measured = true; save(); showers.forEach(function (f) { f(); }); refreshSettings();
+    $('swOut').textContent += ' В тренажёре теперь ' + fmt(S.cm360, 1) + ' см.';
+  };
+  $('testStart').onclick = function () {
+    var c = num($('testCenter').value); if (!(c > 0)) c = S.cm360;
+    c = clamp(c, 8, 90);
+    var cands = [c * 0.8, c, c * 1.25].map(function (v) { return Math.round(v * 10) / 10; });
+    for (var i = 2; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = cands[i]; cands[i] = cands[j]; cands[j] = t; }
+    showTab('train'); setMode('micro', true);
+    testState = { cands: cands, idx: 0, res: [], center: Math.round(c * 10) / 10, rec: null };
+    startSession();
+  };
+
+  refreshSettings(); setMode(S.mode); setDur(S.dur); renderHist(); refreshCalib(); refreshSens();
 })();
 </script>
-
-</body>
-</html>
